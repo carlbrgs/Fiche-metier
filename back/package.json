@@ -1,0 +1,37 @@
+{
+  "name": "fiche-metiers-back",
+  "version": "0.1.0",
+  "private": true,
+  "description": "API Fiches Métiers — Express + Sequelize + MariaDB",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "db:migrate": "tsx src/database/migrate.ts up",
+    "db:status": "tsx src/database/migrate.ts status",
+    "db:sync": "tsx src/database/sync.ts",
+    "import:excel": "tsx src/database/importers/index.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.12.0",
+    "sequelize": "^6.37.5",
+    "xlsx": "^0.18.5",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^26.1.2",
+    "tsx": "^4.19.2",
+    "typescript": "^7.0.2"
+  }
+}

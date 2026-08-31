@@ -1,0 +1,89 @@
+name: fiche-metiers
+
+# Deux usages dans un seul fichier :
+#
+#   docker compose up -d                 → db + adminer seuls (développement :
+#                                          le back et le front tournent en `npm run dev`)
+#   docker compose --profile app up -d --build
+#                                        → pile complète, front sur http://localhost:8080
+#
+# Le profil `app` évite que `docker compose up` écrase le back lancé à la main.
+
+services:
+  db:
+    image: mariadb:11
+    container_name: fiche-metiers-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpwd}
+      MARIADB_DATABASE: ${DB_NAME:-fiche_metiers}
+      MARIADB_USER: ${DB_USER:-fiche}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-fichepwd}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  adminer:
+    image: adminer:latest
+    container_name: fiche-metiers-adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  back:
+    build:
+      context: ./back
+    container_name: fiche-metiers-back
+    profiles: ["app"]
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      # `db` est le nom du service : le DNS interne de Compose le résout.
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-fiche_metiers}
+      DB_USER: ${DB_USER:-fiche}
+      DB_PASSWORD: ${DB_PASSWORD:-fichepwd}
+      DB_LOGGING: "false"
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      # Chemins absolus : les classeurs sont montés, pas copiés dans l'image.
+      XLSX_FORMACODES: /data/formacodes.xlsx
+      XLSX_COMPETENCES: /data/competences.xlsm
+      RUN_MIGRATIONS: "true"
+    volumes:
+      - "./Base formacodes_DC structurants.xlsx:/data/formacodes.xlsx:ro"
+      - "./251230_base competences_V3.3.xlsm:/data/competences.xlsm:ro"
+    ports:
+      # Le front proxifie déjà /api ; ce port n'est exposé que pour le débogage.
+      - "${BACK_PORT:-4000}:4000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  front:
+    build:
+      context: ./front
+    container_name: fiche-metiers-front
+    profiles: ["app"]
+    restart: unless-stopped
+    ports:
+      - "${FRONT_PORT:-8080}:80"
+    depends_on:
+      back:
+        condition: service_healthy
+
+volumes:
+  db_data:

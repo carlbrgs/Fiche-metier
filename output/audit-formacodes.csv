@@ -1,0 +1,219 @@
+﻿section;code_metier;intitule_metier;formacode;libelle;constat;detail
+1-niveaux_incoherents;D10;Responsable de production de produits alimentaires (fabrication / conditionnement);31436;Contrôle qualité;niveaux 2 / 3;couple 2=niv 3, couple 3=niv 2
+1-niveaux_incoherents;C70;Méthaniseur(se);21547;Bonnes pratiques hygiene agroalimentaire;niveaux 1 / 2;couple 1=niv 1, couple 2=niv 2, couple 3=niv 2, couple 4=niv 2, couple 5=niv 2
+1-niveaux_incoherents;F165;Planificateur régulateur vol;23594;Mécanique vol;niveaux (vide) / 2;couple 1=niv 2, couple 2=niv (vide)
+1-niveaux_incoherents;B168;Spécialiste expérience client (UX designer);32079;Gestion performance;niveaux 2 / 3;couple 1=niv 2, couple 4=niv 3
+1-niveaux_incoherents;D192;Agent de chai;21572;Reglementation hygiene agroalimentaire;niveaux 1 / 2;couple 1=niv 1, couple 2=niv 1, couple 3=niv 2, couple 4=niv 1, couple 5=niv 1, couple 6=niv 1
+1-niveaux_incoherents;C205;Agent(e) de culture pépiniériste;31407;Qualite hygiene securite environnement;niveaux 1 / 2;couple 1=niv 2, couple 2=niv 2, couple 3=niv 2, couple 4=niv 2, couple 5=niv 2, couple 6=niv 1
+1-niveaux_incoherents;C206;Agent(e) viticole;31407;Qualite hygiene securite environnement;niveaux (vide) / 2;couple 1=niv 2, couple 2=niv 2, couple 4=niv 2, couple 5=niv (vide)
+1-niveaux_incoherents;C214;Agent(e) d’élevage piscicole;21572;Reglementation hygiene agroalimentaire;niveaux 1 / 2;couple 5=niv 1, couple 6=niv 2
+1-niveaux_incoherents;D217;Conducteur(trice) de ligne d’embouteillage / de conditionnement;21572;Reglementation hygiene agroalimentaire;niveaux 1 / 2;couple 2=niv 2, couple 3=niv 1
+1-niveaux_incoherents;B222;Chargé(e) de marketing;13154;Economie;niveaux 1 / 2;couple 1=niv 2, couple 4=niv 1
+1-niveaux_incoherents;P239;Gestionnaire paie / administration du personnel;13254;Droit;niveaux 1 / 2;couple 2=niv 2, couple 3=niv 2, couple 4=niv 2, couple 5=niv 1, couple 6=niv 1
+1-niveaux_incoherents;C242;Chef(fe) d’équipe du paysage;12054;Sciences naturelles;niveaux 1 / 2;couple 2=niv 1, couple 3=niv 2
+1-niveaux_incoherents;C248;Chef(fe) d’équipe conchyliculture;21572;Reglementation hygiene agroalimentaire;niveaux 1 / 2;couple 2=niv 2, couple 3=niv 1, couple 4=niv 1, couple 5=niv 1
+1-niveaux_incoherents;P252;Gestionnaire en ressources humaines;33054;Ressources humaines;niveaux 1 / 2;couple 2=niv 2, couple 3=niv 1, couple 4=niv 1, couple 5=niv 1, couple 6=niv 1
+1-niveaux_incoherents;A259;Responsable emballage;32062;Recherche et développement;niveaux 2 / 3;couple 1=niv 3, couple 2=niv 2, couple 3=niv 2
+1-niveaux_incoherents;P267;Adjoint de direction;35071;Technique administrative;niveaux 1 / 2;couple 3=niv 2, couple 4=niv 1, couple 6=niv 2
+1-niveaux_incoherents;P269;Manager d’équipe;32079;Gestion performance;niveaux 1 / 2;couple 2=niv 1, couple 3=niv 2
+1-niveaux_incoherents;P294;Contrôleur externe;13366;Fiscalite entreprise;niveaux 1 / 2;couple 2=niv 2, couple 3=niv 2, couple 4=niv 1
+1-niveaux_incoherents;P297;Coordinateur du contrôle interne;13154;Economie;niveaux 2 / 3;couple 2=niv 2, couple 5=niv 2, couple 5=niv 3
+1-niveaux_incoherents;F323;Conducteur(rice) bétaillère;21572;Reglementation hygiene agroalimentaire;niveaux 1 / 2;couple 1=niv 2, couple 2=niv 2, couple 3=niv 1, couple 4=niv 2, couple 5=niv 2
+2-presence_partielle;C16;Chef(fe) de silo;21547;Bonnes pratiques hygiene agroalimentaire;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C16;Chef(fe) de silo;23684;Entretien mécanique;Outil_collecte seulement;couple(s) 6 — absent de la fiche
+2-presence_partielle;J27;Mécanicien(ne) de maintenance industrielle;31754;Manutention;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;J28;Mécanicien(ne)-sertisseur(euse);31754;Manutention;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;J29;Electromécanicien(ne) de maintenance industrielle;31754;Manutention;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;J30;Automaticien(ne) de maintenance industrielle  (installations automatisées et robotisées);31754;Manutention;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;M57;Responsable e-commerce;32110;Management opérationnel;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;M57;Responsable e-commerce;32130;Animation motivation équipe;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;K71;Aggréeur(se);34085;Stratégie commerciale;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;K71;Aggréeur(se);34593;Prospection vente;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;K71;Aggréeur(se);13154;Economie;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;K71;Aggréeur(se);32079;Gestion performance;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;K73;SPECIALISTE CONTROLE QUALITE;21046;Travaux paysagers;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;K73;SPECIALISTE CONTROLE QUALITE;44517;Conception action formation;Outil_collecte seulement;couple(s) 6 — absent de la fiche
+2-presence_partielle;M79;Vendeur(euse) conseil en espace de vente;34582;Négociation commerciale;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;K83;Agréeur produits alimentaires;34085;Stratégie commerciale;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;K83;Agréeur produits alimentaires;34593;Prospection vente;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;K83;Agréeur produits alimentaires;13154;Economie;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;K83;Agréeur produits alimentaires;32079;Gestion performance;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;B87;Chargé(e) de marketing opérationnel;15254;Langues;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;B87;Chargé(e) de marketing opérationnel;34060;Etude de marché;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;B87;Chargé(e) de marketing opérationnel;46319;Ecriture informative;Outil_collecte seulement;couple(s) 3 — absent de la fiche
+2-presence_partielle;M90;Directeur(trice) commercial(e);32130;Animation motivation équipe;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;M90;Directeur(trice) commercial(e);34592;Entretien vente;Outil_collecte seulement;couple(s) 4 — absent de la fiche
+2-presence_partielle;M126;Vendeur(euse) conseil à distance;34582;Négociation commerciale;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;M137;Conseiller de vente à distance;34507;Vente à distance;Outil_collecte seulement;couple(s) 3 — absent de la fiche
+2-presence_partielle;M137;Conseiller de vente à distance;13154;Economie;Outil_collecte seulement;couple(s) 3 — absent de la fiche
+2-presence_partielle;D160;OPERATEUR(TRICE) DE PREMIERE TRANSFORMATION DES VIANDES;21577;Viande;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;D160;OPERATEUR(TRICE) DE PREMIERE TRANSFORMATION DES VIANDES;21598;Abattage;Outil_collecte seulement;couple(s) 2 — absent de la fiche
+2-presence_partielle;J169;Mécanicien/ne avion;13154;Economie;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;J169;Mécanicien/ne avion;32079;Gestion performance;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;J169;Mécanicien/ne avion;21572;Reglementation hygiene agroalimentaire;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;J172;Maintenicien/ne en équipements aéroportuaires;31624;Maintenance industrielle;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;J172;Maintenicien/ne en équipements aéroportuaires;21592;Conserve;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;J172;Maintenicien/ne en équipements aéroportuaires;31058;Informatique industrielle;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;C185;Responsable méthanisation;31407;Qualite hygiene securite environnement;Outil_collecte seulement;couple(s) 2,5 — absent de la fiche
+2-presence_partielle;C186;Second(e) d’exploitation en cultures spécialisées/chef(fe) d’équipe;31436;Contrôle qualité;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C186;Second(e) d’exploitation en cultures spécialisées/chef(fe) d’équipe;21547;Bonnes pratiques hygiene agroalimentaire;Outil_collecte seulement;couple(s) 4 — absent de la fiche
+2-presence_partielle;C187;Chef(fe) de culture;31436;Contrôle qualité;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C187;Chef(fe) de culture;21547;Bonnes pratiques hygiene agroalimentaire;Outil_collecte seulement;couple(s) 4 — absent de la fiche
+2-presence_partielle;C189;Agent(e) arboricole;21547;Bonnes pratiques hygiene agroalimentaire;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;D190;Responsable de chai;23684;Entretien mécanique;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;D190;Responsable de chai;13254;Droit;Outil_collecte seulement;couple(s) 2 — absent de la fiche
+2-presence_partielle;D190;Responsable de chai;21547;Bonnes pratiques hygiene agroalimentaire;Outil_collecte seulement;couple(s) 5 — absent de la fiche
+2-presence_partielle;D192;Agent de chai;21577;Viande;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;D192;Agent de chai;31436;Contrôle qualité;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;D192;Agent de chai;31620;Conduite installation industrielle;Outil_collecte seulement;couple(s) 2,3 — absent de la fiche
+2-presence_partielle;D194;Superviseur de production;13254;Droit;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;D195;Conducteur(trice) de machine / d’équipement (machiniste-régleur / souffleur / remplisseur);31624;Maintenance industrielle;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;D195;Conducteur(trice) de machine / d’équipement (machiniste-régleur / souffleur / remplisseur);23684;Entretien mécanique;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;D195;Conducteur(trice) de machine / d’équipement (machiniste-régleur / souffleur / remplisseur);21532;Boisson;Outil_collecte seulement;couple(s) 3 — absent de la fiche
+2-presence_partielle;J196;Technicien.ne de maintenance;21547;Bonnes pratiques hygiene agroalimentaire;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;J196;Technicien.ne de maintenance;31058;Informatique industrielle;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;J196;Technicien.ne de maintenance;24431;Maintenance système automatisé;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;J196;Technicien.ne de maintenance;11054;Mathematiques;Outil_collecte seulement;couple(s) 2,3 — absent de la fiche
+2-presence_partielle;J196;Technicien.ne de maintenance;11454;Physique;Outil_collecte seulement;couple(s) 2,3 — absent de la fiche
+2-presence_partielle;J196;Technicien.ne de maintenance;21532;Boisson;Outil_collecte seulement;couple(s) 3 — absent de la fiche
+2-presence_partielle;J197;Automaticien.ne;31754;Manutention;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;J197;Automaticien.ne;11054;Mathematiques;Outil_collecte seulement;couple(s) 1,2,3,4 — absent de la fiche
+2-presence_partielle;C200;Mécanicien(ne) à la pêche;31624;Maintenance industrielle;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C200;Mécanicien(ne) à la pêche;31047;;Outil_collecte seulement;couple(s) 1 — absent de la fiche
+2-presence_partielle;C203;Agent(e) de cultures légumières de plein champs ou sous serre;21754;;Outil_collecte seulement;couple(s) 1 — absent de la fiche
+2-presence_partielle;C203;Agent(e) de cultures légumières de plein champs ou sous serre;21407;;Outil_collecte seulement;couple(s) 1 — absent de la fiche
+2-presence_partielle;C204;Agent(e) horticole;21547;Bonnes pratiques hygiene agroalimentaire;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C204;Agent(e) horticole;21572;Reglementation hygiene agroalimentaire;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;C205;Agent(e) de culture pépiniériste;21547;Bonnes pratiques hygiene agroalimentaire;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C205;Agent(e) de culture pépiniériste;21572;Reglementation hygiene agroalimentaire;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;C216;Chef(fe) de culture, Responsable vignoble;21510;Vinification œnologie;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;C216;Chef(fe) de culture, Responsable vignoble;21054;Agriculture production végétale;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;C216;Chef(fe) de culture, Responsable vignoble;21053;Viticulture;Outil_collecte seulement;couple(s) 1,2,3,5 — absent de la fiche
+2-presence_partielle;C216;Chef(fe) de culture, Responsable vignoble;13154;Economie;Outil_collecte seulement;couple(s) 1 — absent de la fiche
+2-presence_partielle;C216;Chef(fe) de culture, Responsable vignoble;12054;Sciences naturelles;Outil_collecte seulement;couple(s) 1,5 — absent de la fiche
+2-presence_partielle;C216;Chef(fe) de culture, Responsable vignoble;23684;Entretien mécanique;Outil_collecte seulement;couple(s) 2 — absent de la fiche
+2-presence_partielle;P218;Responsable administratif et financier;32652;Controle gestion;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;P218;Responsable administratif et financier;33652;;Outil_collecte seulement;couple(s) 1,2 — absent de la fiche
+2-presence_partielle;A219;Technicien(ne) de laboratoire / R&D;21572;Reglementation hygiene agroalimentaire;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;F220;Responsable des ressources humaines;46301;Communication entreprise;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;F220;Responsable des ressources humaines;46031;;Outil_collecte seulement;couple(s) 2,3 — absent de la fiche
+2-presence_partielle;N221;Chargé(e) de communication;46347;Stratégie communication numérique;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;B222;Chargé(e) de marketing;34593;Prospection vente;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;B222;Chargé(e) de marketing;43619;;Outil_collecte seulement;couple(s) 1 — absent de la fiche
+2-presence_partielle;C228;Installateur(trice) de systèmes d’arrosage / piscine / éclairage;35071;Technique administrative;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C228;Installateur(trice) de systèmes d’arrosage / piscine / éclairage;23684;Entretien mécanique;Outil_collecte seulement;couple(s) 2 — absent de la fiche
+2-presence_partielle;F231;Opérateur logistique;23684;Entretien mécanique;Outil_collecte seulement;couple(s) 6 — absent de la fiche
+2-presence_partielle;P232;Gestionnaire de prestations;21056;Elevage;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;P232;Gestionnaire de prestations;12054;Sciences naturelles;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;P232;Gestionnaire de prestations;31407;Qualite hygiene securite environnement;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;P233;Gestionnaire de cotisations;21056;Elevage;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;P233;Gestionnaire de cotisations;12054;Sciences naturelles;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;P233;Gestionnaire de cotisations;31407;Qualite hygiene securite environnement;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;P234;Gestionnaire de créances;21056;Elevage;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;P234;Gestionnaire de créances;12054;Sciences naturelles;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;P234;Gestionnaire de créances;31407;Qualite hygiene securite environnement;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;P236;Juriste;15254;Langues;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;P236;Juriste;31859;Procédure douanière;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;P236;Juriste;21572;Reglementation hygiene agroalimentaire;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;P239;Gestionnaire paie / administration du personnel;11054;Mathematiques;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;P239;Gestionnaire paie / administration du personnel;33052;Administration personnel;Outil_collecte seulement;couple(s) 3,4 — absent de la fiche
+2-presence_partielle;F244;Superviseur logistique;13254;Droit;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;F244;Superviseur logistique;21547;Bonnes pratiques hygiene agroalimentaire;Outil_collecte seulement;couple(s) 4 — absent de la fiche
+2-presence_partielle;C245;Patron(ne) de pêche;31407;Qualite hygiene securite environnement;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C246;Ouvrier(ière) conchylicole;31407;Qualite hygiene securite environnement;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C246;Ouvrier(ière) conchylicole;31872;Transport maritime;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C246;Ouvrier(ière) conchylicole;11054;Mathematiques;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;C248;Chef(fe) d’équipe conchyliculture;31407;Qualite hygiene securite environnement;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C248;Chef(fe) d’équipe conchyliculture;31872;Transport maritime;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C249;Responsable d’exploitation conchylicole;33054;Ressources humaines;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;C249;Responsable d’exploitation conchylicole;21052;Gestion exploitation agricole;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;C249;Responsable d’exploitation conchylicole;32079;Gestion performance;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;C250;Ouvrier(ière) algocole;31407;Qualite hygiene securite environnement;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C251;Responsable d’exploitation algocole;33054;Ressources humaines;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;C251;Responsable d’exploitation algocole;21052;Gestion exploitation agricole;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;C251;Responsable d’exploitation algocole;32079;Gestion performance;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;P252;Gestionnaire en ressources humaines;32688;Traitement paie;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;M255;Vendeur.euse conseil en magasin;34597;Merchandisage;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;M255;Vendeur.euse conseil en magasin;34957;;Outil_collecte seulement;couple(s) 3 — absent de la fiche
+2-presence_partielle;A259;Responsable emballage;32079;Gestion performance;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;A259;Responsable emballage;31620;Conduite installation industrielle;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;D260;Responsable de production;21572;Reglementation hygiene agroalimentaire;Outil_collecte seulement;couple(s) 3,6 — absent de la fiche
+2-presence_partielle;C262;Conseiller/ère agricole spécialisé/e en protection des cultures;21510;Vinification œnologie;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;C262;Conseiller/ère agricole spécialisé/e en protection des cultures;15254;Langues;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C262;Conseiller/ère agricole spécialisé/e en protection des cultures;21547;Bonnes pratiques hygiene agroalimentaire;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C262;Conseiller/ère agricole spécialisé/e en protection des cultures;34584;Animation vente;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C262;Conseiller/ère agricole spécialisé/e en protection des cultures;21046;Travaux paysagers;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;C262;Conseiller/ère agricole spécialisé/e en protection des cultures;13254;Droit;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C263;Chargé/e de filière;32062;Recherche et développement;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;C263;Chargé/e de filière;31608;Genie procedes;fiche metier seulement;niveau 4 — a ajouter dans Outil_collecte
+2-presence_partielle;C263;Chargé/e de filière;15254;Langues;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;C263;Chargé/e de filière;32650;Gestion budgetaire;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;C263;Chargé/e de filière;11054;Mathematiques;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;M264;Acheteur des matières premières;34005;Qualite achat;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;M264;Acheteur des matières premières;32079;Gestion performance;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;M264;Acheteur des matières premières;21572;Reglementation hygiene agroalimentaire;Outil_collecte seulement;couple(s) 4 — absent de la fiche
+2-presence_partielle;M265;Assistant administration des ventes;15254;Langues;Outil_collecte seulement;couple(s) 2,4 — absent de la fiche
+2-presence_partielle;M265;Assistant administration des ventes;21532;Boisson;Outil_collecte seulement;couple(s) 2 — absent de la fiche
+2-presence_partielle;M265;Assistant administration des ventes;21510;Vinification œnologie;Outil_collecte seulement;couple(s) 2 — absent de la fiche
+2-presence_partielle;P267;Adjoint de direction;13366;Fiscalite entreprise;Outil_collecte seulement;couple(s) 5 — absent de la fiche
+2-presence_partielle;P270;Responsable Département / structure;31652;Gestion production;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;C275;Agent(e) de silo;32110;Management opérationnel;Outil_collecte seulement;couple(s) 1 — absent de la fiche
+2-presence_partielle;F277;Conducteur/trice livreur/euse;23684;Entretien mécanique;Outil_collecte seulement;couple(s) 4 — absent de la fiche
+2-presence_partielle;M280;Commercial(e);34554;;Outil_collecte seulement;couple(s) 3 — absent de la fiche
+2-presence_partielle;M280;Commercial(e);34254;Commerce international;Outil_collecte seulement;couple(s) 3,4,6 — absent de la fiche
+2-presence_partielle;K281;Réceptionnaire agréeur/euse;34085;Stratégie commerciale;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;K281;Réceptionnaire agréeur/euse;34593;Prospection vente;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;K281;Réceptionnaire agréeur/euse;13154;Economie;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;K281;Réceptionnaire agréeur/euse;32079;Gestion performance;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;K282;Responsable QHSSE;13254;Droit;Outil_collecte seulement;couple(s) 6 — absent de la fiche
+2-presence_partielle;C286;Conducteur/trice de silo;32110;Management opérationnel;Outil_collecte seulement;couple(s) 1 — absent de la fiche
+2-presence_partielle;L288;Responsable des achats;21572;Reglementation hygiene agroalimentaire;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;L288;Responsable des achats;31572;;Outil_collecte seulement;couple(s) 6 — absent de la fiche
+2-presence_partielle;P290;Comptable;13154;Economie;Outil_collecte seulement;couple(s) 2 — absent de la fiche
+2-presence_partielle;D301;Opérateur(trice) en 1ère transformation des viandes;21577;Viande;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;D301;Opérateur(trice) en 1ère transformation des viandes;21598;Abattage;Outil_collecte seulement;couple(s) 2 — absent de la fiche
+2-presence_partielle;P305;Responsable RSE;46301;Communication entreprise;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;D307;Opérateur(rice) en 3e transformation des viandes;31620;Conduite installation industrielle;Outil_collecte seulement;couple(s) 2 — absent de la fiche
+2-presence_partielle;D308;Directeur(rice) d’établissement d’abattage / de transformation des viandes;31058;Informatique industrielle;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;D308;Directeur(rice) d’établissement d’abattage / de transformation des viandes;31608;Genie procedes;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;D308;Directeur(rice) d’établissement d’abattage / de transformation des viandes;12054;Sciences naturelles;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;D308;Directeur(rice) d’établissement d’abattage / de transformation des viandes;11454;Physique;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;D311;Conducteur/trice de ligne de production;31620;Conduite installation industrielle;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;D312;Conducteur/trice de machine ou de process;31624;Maintenance industrielle;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;D314;Responsable de production;31624;Maintenance industrielle;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;D314;Responsable de production;21368;Conchyliculture;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;D314;Responsable de production;21547;Bonnes pratiques hygiene agroalimentaire;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;D314;Responsable de production;13154;Economie;Outil_collecte seulement;couple(s) 1 — absent de la fiche
+2-presence_partielle;D314;Responsable de production;31652;Gestion production;Outil_collecte seulement;couple(s) 1,2,4,5 — absent de la fiche
+2-presence_partielle;D314;Responsable de production;21577;Viande;Outil_collecte seulement;couple(s) 2,3 — absent de la fiche
+2-presence_partielle;D314;Responsable de production;13254;Droit;Outil_collecte seulement;couple(s) 3 — absent de la fiche
+2-presence_partielle;D314;Responsable de production;31436;Contrôle qualité;Outil_collecte seulement;couple(s) 3,6 — absent de la fiche
+2-presence_partielle;D314;Responsable de production;31608;Genie procedes;Outil_collecte seulement;couple(s) 4 — absent de la fiche
+2-presence_partielle;D315;Responsable d’atelier de production;21368;Conchyliculture;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;J316;Agent(e) de maintenance;31058;Informatique industrielle;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;J316;Agent(e) de maintenance;24054;Electricité;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;J316;Agent(e) de maintenance;24052;Electromécanique;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;J316;Agent(e) de maintenance;31754;Manutention;Outil_collecte seulement;couple(s) 3 — absent de la fiche
+2-presence_partielle;J317;Technicien(ne) de maintenance;11054;Mathematiques;Outil_collecte seulement;couple(s) 2,4 — absent de la fiche
+2-presence_partielle;J317;Technicien(ne) de maintenance;11454;Physique;Outil_collecte seulement;couple(s) 2 — absent de la fiche
+2-presence_partielle;J318;Responsable de maintenance;31058;Informatique industrielle;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;J318;Responsable de maintenance;11454;Physique;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;F319;Agent(e) logistique;21572;Reglementation hygiene agroalimentaire;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;F321;Technicien(ne) ordonnancement;31662;Ordonnancement;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;F321;Technicien(ne) ordonnancement;15254;Langues;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;F321;Technicien(ne) ordonnancement;31652;Gestion production;Outil_collecte seulement;couple(s) 1 — absent de la fiche
+2-presence_partielle;F321;Technicien(ne) ordonnancement;21577;Viande;Outil_collecte seulement;couple(s) 1 — absent de la fiche
+2-presence_partielle;F322;Responsable logistique;13254;Droit;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;F322;Responsable logistique;11054;Mathematiques;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;F322;Responsable logistique;13154;Economie;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;F322;Responsable logistique;31721;Entreposage stockage;Outil_collecte seulement;couple(s) 2,3 — absent de la fiche
+2-presence_partielle;F322;Responsable logistique;31743;Expedition;Outil_collecte seulement;couple(s) 2,3 — absent de la fiche
+2-presence_partielle;K324;Opérateur(rice) en nettoyage industriel;23684;Entretien mécanique;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;K324;Opérateur(rice) en nettoyage industriel;31624;Maintenance industrielle;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;K325;Animateur(trice) QHSSE;34085;Stratégie commerciale;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;F328;Conducteur(rice) livreur(se);21547;Bonnes pratiques hygiene agroalimentaire;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;K330;Animateur(trice) prévention sécurité;15254;Langues;fiche metier seulement;niveau 1 — a ajouter dans Outil_collecte
+2-presence_partielle;K330;Animateur(trice) prévention sécurité;15234;;Outil_collecte seulement;couple(s) 1 — absent de la fiche
+2-presence_partielle;K331;Responsable QHSSE;31454;Gestion qualite;fiche metier seulement;niveau 3 — a ajouter dans Outil_collecte
+2-presence_partielle;K331;Responsable QHSSE;12054;Sciences naturelles;fiche metier seulement;niveau 2 — a ajouter dans Outil_collecte
+2-presence_partielle;K331;Responsable QHSSE;21577;Viande;Outil_collecte seulement;couple(s) 3 — absent de la fiche
