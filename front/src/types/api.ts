@@ -176,6 +176,13 @@ export interface ConnaissanceMetier {
   codeNsf: string | null;
 }
 
+/** Champs minimaux pour un sélecteur de métier (ex. « métier de départ » des passerelles). */
+export interface MetierOption {
+  codeMetier: string;
+  intitule: string;
+  codeFamille: string | null;
+}
+
 export interface MetierProche {
   codeMetier: string;
   intitule: string;

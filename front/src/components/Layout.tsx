@@ -1,13 +1,23 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 const LIENS = [
   { to: '/', label: 'Accueil', exact: true },
   { to: '/metiers', label: 'Métiers' },
   { to: '/activites', label: 'Activités & compétences' },
   { to: '/formacodes', label: 'Domaines de connaissance' },
+  { to: '/passerelles', label: 'Passerelles' },
 ];
 
 export function Layout() {
+  const { deconnecterSession } = useAuth();
+  const navigate = useNavigate();
+
+  async function seDeconnecter() {
+    await deconnecterSession();
+    navigate('/login', { replace: true });
+  }
+
   return (
     <div className="app">
       <header className="app-header">
@@ -24,6 +34,9 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
+        <button type="button" className="app-header__deconnexion" onClick={seDeconnecter}>
+          Se déconnecter
+        </button>
       </header>
 
       <main className="app-main">

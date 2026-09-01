@@ -59,6 +59,9 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-fichepwd}
       DB_LOGGING: "false"
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      AUTH_USERNAME: ${AUTH_USERNAME:-admin}
+      AUTH_PASSWORD: ${AUTH_PASSWORD:-changez-moi}
+      AUTH_SESSION_SECRET: ${AUTH_SESSION_SECRET:-changez-moi-aussi-une-longue-chaine-aleatoire}
       # Chemins absolus : les classeurs sont montés, pas copiés dans l'image.
       XLSX_FORMACODES: /data/formacodes.xlsx
       XLSX_COMPETENCES: /data/competences.xlsm

@@ -24,6 +24,17 @@ function construireUrl(chemin: string, params?: Record<string, ParamValue>): str
   return url.pathname + url.search;
 }
 
+/**
+ * Une session expirée (401) renvoie tout le monde à `/login` plutôt que de laisser chaque
+ * page afficher son propre message d'erreur cryptique — c'est le seul statut qui concerne
+ * l'authentification plutôt que la donnée demandée.
+ */
+function gererExpirationSession(status: number): void {
+  if (status === 401 && window.location.pathname !== '/login') {
+    window.location.href = '/login';
+  }
+}
+
 export async function apiGet<T>(
   chemin: string,
   params?: Record<string, ParamValue>,
@@ -31,10 +42,12 @@ export async function apiGet<T>(
 ): Promise<T> {
   const reponse = await fetch(construireUrl(chemin, params), {
     headers: { Accept: 'application/json' },
+    credentials: 'include',
     signal,
   });
 
   if (!reponse.ok) {
+    gererExpirationSession(reponse.status);
     const corps = await reponse.json().catch(() => null);
     throw new ApiError(
       reponse.status,
@@ -44,4 +57,39 @@ export async function apiGet<T>(
   }
 
   return reponse.json() as Promise<T>;
+}
+
+async function envoyer<T>(
+  methode: 'POST' | 'PATCH',
+  chemin: string,
+  corps?: unknown,
+  signal?: AbortSignal,
+): Promise<T> {
+  const reponse = await fetch(construireUrl(chemin), {
+    method: methode,
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: corps !== undefined ? JSON.stringify(corps) : undefined,
+    signal,
+  });
+
+  if (!reponse.ok) {
+    gererExpirationSession(reponse.status);
+    const corpsErreur = await reponse.json().catch(() => null);
+    throw new ApiError(
+      reponse.status,
+      corpsErreur?.error?.message ?? `Erreur ${reponse.status}`,
+      corpsErreur?.error?.code,
+    );
+  }
+
+  return reponse.json() as Promise<T>;
+}
+
+export function apiPost<T>(chemin: string, corps?: unknown, signal?: AbortSignal): Promise<T> {
+  return envoyer<T>('POST', chemin, corps, signal);
+}
+
+export function apiPatch<T>(chemin: string, corps?: unknown, signal?: AbortSignal): Promise<T> {
+  return envoyer<T>('PATCH', chemin, corps, signal);
 }

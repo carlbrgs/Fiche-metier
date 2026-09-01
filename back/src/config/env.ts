@@ -34,6 +34,14 @@ export const env = {
     formacodes: optional('XLSX_FORMACODES', '../Base formacodes_DC structurants.xlsx'),
     competences: optional('XLSX_COMPETENCES', '../251230_base competences_V3.3.xlsm'),
   },
+
+  auth: {
+    username: required('AUTH_USERNAME'),
+    password: required('AUTH_PASSWORD'),
+    // Signe le cookie de session — indépendant du mot de passe : le faire tourner ne doit
+    // pas obliger à changer les identifiants, et inversement.
+    sessionSecret: required('AUTH_SESSION_SECRET'),
+  },
 } as const;
 
 export const isProduction = env.nodeEnv === 'production';

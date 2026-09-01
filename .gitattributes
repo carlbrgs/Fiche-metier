@@ -1,0 +1,4 @@
+# Les scripts exécutés dans les conteneurs Linux doivent garder des fins de ligne LF,
+# même sur un checkout Windows (core.autocrlf=true convertirait sinon en CRLF et casserait
+# le shebang : "exec ...: no such file or directory").
+*.sh text eol=lf

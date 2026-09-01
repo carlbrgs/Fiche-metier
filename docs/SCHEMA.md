@@ -389,6 +389,15 @@ CREATE TABLE metier_proximite (            -- Degre_Elargissement + Table_durée
 );                                          -- 333² ≈ 110 k lignes : négligeable pour MariaDB
 ```
 
+`degre_elargissement` n'est pas borné à [0,1] : il vaut **-1** pour une régression (la cible
+demande un niveau de formation moyen inférieur à la source — pas de bonus appliqué), sinon
+0 à 2 de base (écart de niveau de formation) plus jusqu'à 2,5 de bonus (responsabilité
+transversale, ressources transverses 2/8/10, interface amont/aval). Formule et mapping des
+données reconstitués depuis `Outil_passerelles_062026.xlsx` (fourni hors dépôt) — voir le
+commentaire en tête de `recalculerProximites()` dans `services/passerelle.service.ts`. Le
+niveau de formation par métier, disparu avec `MOYENNE_NIV_FORMATION` (§8.5), est dérivé à la
+volée de `metier_acces` (ACCES_3/ACCES_4, moyenne des deux bornes).
+
 L'index `idx_prox_tri` sert la requête centrale de l'écran « métiers les plus proches » :
 
 ```sql
@@ -398,6 +407,7 @@ JOIN metier m ON m.code_metier = p.code_metier_cible
 WHERE p.code_metier_source = ?
   AND p.duree_acquisition_heures <= ?     -- 'Nombre d'heures max d'acquisition' (défaut 10000)
   AND p.nb_dc_communs >= ?                -- 'Nombre min de domaines communs' (défaut 1)
+  AND p.degre_elargissement >= ?          -- 'Minimum degré d'élargissement' (défaut 0,1) — exclut les régressions
 ORDER BY p.duree_acquisition_heures
 LIMIT ?;                                   -- 'Nombre max de métiers à afficher' (défaut 15)
 ```
@@ -482,8 +492,9 @@ Ces choix dépendent d'informations qui ne sont pas dans les fichiers — à tra
    un même code (lignes 314 et 315). **Seule une correction dans le classeur peut trancher** :
    `data_METIERS`, qui donnait la réponse, est écartée par décision. Tant que ce n'est pas
    fait, l'import consigne la collision et n'importe que 332 métiers.
-5. **`MOYENNE_NIV_FORMATION`** — abandonnée (migration 003). Si le besoin réapparaît, il
-   faudra retrouver la formule de calcul dans le VBA du classeur.
+5. **`MOYENNE_NIV_FORMATION`** — colonne abandonnée (migration 003), formule VBA introuvable.
+   Résolu : `recalculerProximites()` dérive un niveau de formation équivalent depuis
+   `metier_acces` (ACCES_3/ACCES_4) plutôt que de recalculer l'ancienne colonne.
 6. **Authentification** : aucune table utilisateur n'est prévue, rien dans les sources ne le suggère.
    À ajouter (`utilisateur`, `role`) si le back doit être protégé sur le VPS.
 5. **Historisation des fiches** : la feuille `Enregistrer une fiche métier` suggère un besoin de

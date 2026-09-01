@@ -22,7 +22,10 @@ export async function listerMetiersProches(
   const parametres: ParametresProximite = {
     heuresMax: Number(req.query.heuresMax) || 10_000,
     dcMin: Number(req.query.dcMin) || 1,
-    limite: Math.min(Number(req.query.limite) || 15, 100),
+    degreMin: Number(req.query.degreMin) || 0.1,
+    // Plafonné à 350 (> 333 métiers) plutôt qu'à 100 : l'écran passerelles dédié veut la
+    // liste complète des candidats, pas seulement le top 15 de la fiche métier.
+    limite: Math.min(Number(req.query.limite) || 15, 350),
   };
 
   const resultats = await trouverMetiersProches(metier.codeMetier, parametres);

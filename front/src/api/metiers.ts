@@ -1,8 +1,9 @@
-import { apiGet } from './client';
+import { apiGet, apiPatch } from './client';
 import type {
   Metier,
   Couple,
   MetierProche,
+  MetierOption,
   ConnaissanceMetier,
   PaginatedResponse,
 } from '@/types/api';
@@ -22,8 +23,25 @@ export function listerMetiers(filtres: FiltresMetiers, signal?: AbortSignal) {
   return apiGet<PaginatedResponse<Metier>>('/metiers', { ...filtres }, signal);
 }
 
+/** Tous les métiers (champs minimaux), pour un sélecteur — voir PasserellesPage. */
+export function listerMetiersOptions(signal?: AbortSignal) {
+  return apiGet<{ data: MetierOption[] }>('/metiers/options', undefined, signal);
+}
+
 export function obtenirMetier(code: string, signal?: AbortSignal) {
   return apiGet<Metier>(`/metiers/${encodeURIComponent(code)}`, undefined, signal);
+}
+
+/** Champs simples uniquement — pas les listes (appellations, ROME, conditions, couples…). */
+export interface ModificationMetier {
+  definition?: string | null;
+  remarque?: string | null;
+  responsTransverse?: 'oui' | 'non' | null;
+  interfaceAmontAval?: string | null;
+}
+
+export function modifierMetier(code: string, modification: ModificationMetier, signal?: AbortSignal) {
+  return apiPatch<Metier>(`/metiers/${encodeURIComponent(code)}`, modification, signal);
 }
 
 /** Les couples activité-compétence de la fiche, dans l'ordre des blocs de collecte. */
@@ -47,6 +65,8 @@ export function obtenirConnaissancesMetier(code: string, signal?: AbortSignal) {
 export interface ParametresProximite {
   heuresMax?: number;
   dcMin?: number;
+  /** Exclut les régressions (défaut 0,1 côté API) : un métier moins qualifiant n'est pas un élargissement. */
+  degreMin?: number;
   limite?: number;
 }
 

@@ -81,6 +81,21 @@ h2 {
   border-bottom-color: var(--couleur-accent);
 }
 
+.app-header__deconnexion {
+  margin-left: auto;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--couleur-bordure);
+  background: var(--couleur-surface);
+  border-radius: var(--rayon);
+  font: inherit;
+  color: var(--couleur-texte-doux);
+  cursor: pointer;
+}
+.app-header__deconnexion:hover {
+  border-color: var(--couleur-accent);
+  color: var(--couleur-accent);
+}
+
 .app-main {
   flex: 1;
   width: min(1200px, 100%);
@@ -223,9 +238,67 @@ h2 {
 .fiche__entete {
   margin-bottom: 1.5rem;
 }
+.fiche__entete-ligne {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
 .fiche__famille {
   color: var(--couleur-texte-doux);
   margin: 0;
+}
+
+.fiche__entete-boutons {
+  display: flex;
+  flex: none;
+  gap: 0.75rem;
+}
+
+.bouton--export {
+  flex: none;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--couleur-accent);
+  background: var(--couleur-accent);
+  color: #fff;
+  border-radius: var(--rayon);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.bouton--export:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.bouton--secondaire {
+  flex: none;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--couleur-bordure);
+  background: var(--couleur-surface);
+  color: var(--couleur-texte);
+  border-radius: var(--rayon);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.bouton--secondaire:hover {
+  border-color: var(--couleur-accent);
+  color: var(--couleur-accent);
+}
+.bouton--secondaire:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.edition__texte {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  font: inherit;
+  color: var(--couleur-texte);
+  resize: vertical;
 }
 
 .fiche__section {
@@ -536,4 +609,137 @@ h2 {
 .lien-retour {
   display: inline-block;
   margin-top: 1rem;
+}
+
+/* ---------- Connexion ---------- */
+
+.connexion {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.connexion__carte {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: min(24rem, 100%);
+  background: var(--couleur-surface);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  padding: 2rem;
+}
+.connexion__carte h1 {
+  margin-bottom: 0;
+}
+.connexion__carte .passerelles-champ {
+  min-width: 0;
+}
+.connexion__carte button {
+  margin-top: 0.5rem;
+}
+
+/* ---------- Passerelles ---------- */
+
+.passerelles-parametres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: flex-end;
+}
+.passerelles-parametres--compact {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.passerelles-champ {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 12rem;
+}
+.passerelles-champ--large {
+  min-width: 18rem;
+}
+.passerelles-champ--case {
+  justify-content: flex-end;
+  min-width: 0;
+}
+.passerelles-champ--case label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--couleur-texte);
+  font-weight: 400;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.passerelles-champ--case input {
+  width: 1rem;
+  height: 1rem;
+}
+.passerelles-champ label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--couleur-texte-doux);
+}
+.passerelles-champ select,
+.passerelles-champ input {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: var(--couleur-surface);
+  font: inherit;
+}
+
+.passerelles-graphique {
+  width: 100%;
+}
+.passerelles-graphique svg {
+  width: 100%;
+  height: auto;
+}
+.passerelles-graphique__grille {
+  stroke: var(--couleur-bordure);
+  stroke-width: 1;
+}
+.passerelles-graphique__tick {
+  font-size: 10px;
+  fill: var(--couleur-texte-doux);
+}
+.passerelles-graphique__titre-axe {
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--couleur-texte-doux);
+}
+.passerelles-graphique__point {
+  fill: var(--couleur-accent);
+  stroke: var(--couleur-surface);
+  stroke-width: 2;
+  pointer-events: none;
+}
+.passerelles-graphique__cible {
+  fill: transparent;
+  cursor: pointer;
+}
+.passerelles-graphique__cible:hover,
+.passerelles-graphique__cible:focus-visible {
+  fill: var(--couleur-accent-doux);
+  outline: none;
+}
+.passerelles-graphique__bulle {
+  fill: var(--couleur-texte);
+  opacity: 0.95;
+}
+.passerelles-graphique__bulle-titre {
+  fill: #fff;
+  font-size: 11px;
+  font-weight: 600;
+}
+.passerelles-graphique__bulle-valeur {
+  fill: #fff;
+  font-size: 10.5px;
 }

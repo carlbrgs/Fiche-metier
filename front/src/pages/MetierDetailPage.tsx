@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   obtenirMetier,
+  modifierMetier,
   obtenirActivitesMetier,
   obtenirConnaissancesMetier,
   listerMetiersProches,
 } from '@/api/metiers';
 import { obtenirReferentiels } from '@/api/activites';
+import { ApiError } from '@/api/client';
 import { useFetch } from '@/hooks/useFetch';
 import { Loader } from '@/components/Loader';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -14,12 +17,29 @@ import { ConditionsFiche } from '@/components/ConditionsFiche';
 import { AccesFiche } from '@/components/AccesFiche';
 import { CouplesFiche } from '@/components/CouplesFiche';
 import { ConnaissancesFiche } from '@/components/ConnaissancesFiche';
+import { FiltresPasserelles } from '@/components/FiltresPasserelles';
 import { libelleFamille } from '@/utils/format';
 
 export function MetierDetailPage() {
   const { code = '' } = useParams();
+  const [exportEnCours, setExportEnCours] = useState(false);
+  const [dcMin, setDcMin] = useState(1);
+  const [heuresMax, setHeuresMax] = useState(2000);
+  const [degreMin, setDegreMin] = useState(0.1);
+  const [memeFamille, setMemeFamille] = useState(false);
 
-  const metier = useFetch((signal) => obtenirMetier(code, signal), [code]);
+  const [rechargerMetier, setRechargerMetier] = useState(0);
+  const [modeEdition, setModeEdition] = useState(false);
+  const [enregistrementEnCours, setEnregistrementEnCours] = useState(false);
+  const [erreurEnregistrement, setErreurEnregistrement] = useState<string | null>(null);
+  const [edition, setEdition] = useState({
+    definition: '',
+    remarque: '',
+    responsTransverse: '' as '' | 'oui' | 'non',
+    interfaceAmontAval: '',
+  });
+
+  const metier = useFetch((signal) => obtenirMetier(code, signal), [code, rechargerMetier]);
   // Fournit la liste complète des critères d'accès : les questions sans réponse
   // doivent rester visibles sur la fiche.
   const referentiels = useFetch((signal) => obtenirReferentiels(signal), []);
@@ -29,8 +49,8 @@ export function MetierDetailPage() {
     [code],
   );
   const proches = useFetch(
-    (signal) => listerMetiersProches(code, { heuresMax: 10000, dcMin: 1, limite: 15 }, signal),
-    [code],
+    (signal) => listerMetiersProches(code, { dcMin, heuresMax, degreMin, limite: 15 }, signal),
+    [code, dcMin, heuresMax, degreMin],
   );
 
   if (metier.chargement) return <Loader />;
@@ -39,18 +59,189 @@ export function MetierDetailPage() {
 
   const m = metier.donnees;
 
+  // Le filtre « même famille » n'existe que côté front (comme sur la page Passerelles) :
+  // les trois autres paramètres sont déjà appliqués par l'API.
+  const resultatsProches =
+    memeFamille && m.codeFamille
+      ? (proches.donnees?.data ?? []).filter((p) => p.codeFamille === m.codeFamille)
+      : (proches.donnees?.data ?? []);
+
+  // Les données annexes ne sont pas encore chargées tant que ces requêtes n'ont pas abouti :
+  // exporter avant produirait un .docx incomplet (activités ou connaissances manquantes).
+  const donneesPretes =
+    !activites.chargement &&
+    !connaissances.chargement &&
+    !proches.chargement &&
+    !referentiels.chargement;
+
+  async function exporterWord() {
+    if (!metier.donnees) return;
+    setExportEnCours(true);
+    try {
+      // Import dynamique : `docx` (~600 ko) ne doit peser que sur les visiteurs qui exportent.
+      // Seule la sélection déjà filtrée (`resultatsProches`) part dans le document : les
+      // contrôles de filtre eux-mêmes n'existent que dans la page, jamais dans l'export.
+      const { exporterFicheMetierWord } = await import('@/utils/exportWord');
+      await exporterFicheMetierWord({
+        metier: metier.donnees,
+        couples: activites.donnees?.data ?? [],
+        connaissances: connaissances.donnees?.data ?? [],
+        proches: resultatsProches,
+        criteresAcces: referentiels.donnees?.acces ?? [],
+      });
+    } finally {
+      setExportEnCours(false);
+    }
+  }
+
+  function commencerEdition() {
+    setEdition({
+      definition: m.definition ?? '',
+      remarque: m.remarque ?? '',
+      responsTransverse: m.responsTransverse ?? '',
+      interfaceAmontAval: m.interfaceAmontAval ?? '',
+    });
+    setErreurEnregistrement(null);
+    setModeEdition(true);
+  }
+
+  async function enregistrerEdition() {
+    setEnregistrementEnCours(true);
+    setErreurEnregistrement(null);
+    try {
+      await modifierMetier(code, {
+        definition: edition.definition.trim() || null,
+        remarque: edition.remarque.trim() || null,
+        responsTransverse: edition.responsTransverse || null,
+        interfaceAmontAval: edition.interfaceAmontAval || null,
+      });
+      setModeEdition(false);
+      setRechargerMetier((v) => v + 1);
+    } catch (err) {
+      setErreurEnregistrement(err instanceof ApiError ? err.message : 'Enregistrement impossible');
+    } finally {
+      setEnregistrementEnCours(false);
+    }
+  }
+
   return (
     <article className="page fiche">
       <header className="fiche__entete">
-        <span className="carte__code">{m.codeMetier}</span>
-        <h1>{m.intitule}</h1>
+        <div className="fiche__entete-ligne">
+          <div>
+            <span className="carte__code">{m.codeMetier}</span>
+            <h1>{m.intitule}</h1>
+          </div>
+          <div className="fiche__entete-boutons">
+            {modeEdition ? (
+              <>
+                <button
+                  type="button"
+                  className="bouton--secondaire"
+                  onClick={() => setModeEdition(false)}
+                  disabled={enregistrementEnCours}
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  className="bouton--export"
+                  onClick={enregistrerEdition}
+                  disabled={enregistrementEnCours}
+                >
+                  {enregistrementEnCours ? 'Enregistrement…' : 'Enregistrer'}
+                </button>
+              </>
+            ) : (
+              <>
+                <button type="button" className="bouton--secondaire" onClick={commencerEdition}>
+                  Modifier
+                </button>
+                <button
+                  type="button"
+                  className="bouton--export"
+                  onClick={exporterWord}
+                  disabled={!donneesPretes || exportEnCours}
+                >
+                  {exportEnCours ? 'Export en cours…' : 'Exporter en Word'}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
         {m.famille && <p className="fiche__famille">{libelleFamille(m.famille)}</p>}
+        {erreurEnregistrement && <ErrorMessage message={erreurEnregistrement} />}
       </header>
 
-      {m.definition && (
+      {(modeEdition || m.definition) && (
         <section className="fiche__section">
           <h2>Définition</h2>
-          <p>{m.definition}</p>
+          {modeEdition ? (
+            <textarea
+              className="edition__texte"
+              rows={4}
+              value={edition.definition}
+              onChange={(e) => setEdition((s) => ({ ...s, definition: e.target.value }))}
+            />
+          ) : (
+            <p>{m.definition}</p>
+          )}
+        </section>
+      )}
+
+      {(modeEdition || m.remarque) && (
+        <section className="fiche__section">
+          <h2>Remarque</h2>
+          {modeEdition ? (
+            <textarea
+              className="edition__texte"
+              rows={3}
+              value={edition.remarque}
+              onChange={(e) => setEdition((s) => ({ ...s, remarque: e.target.value }))}
+            />
+          ) : (
+            <p>{m.remarque}</p>
+          )}
+        </section>
+      )}
+
+      {modeEdition && (
+        <section className="fiche__section">
+          <h2>Paramètres de calcul des passerelles</h2>
+          <p className="detail">
+            Non affichés sur la fiche, utilisés uniquement par le calcul du degré
+            d’élargissement. Un changement ne met pas à jour les passerelles déjà calculées —
+            il faut relancer le recalcul côté serveur.
+          </p>
+          <div className="passerelles-parametres">
+            <div className="passerelles-champ">
+              <label htmlFor="edition-respons">Responsabilité transverse</label>
+              <select
+                id="edition-respons"
+                value={edition.responsTransverse}
+                onChange={(e) =>
+                  setEdition((s) => ({ ...s, responsTransverse: e.target.value as '' | 'oui' | 'non' }))
+                }
+              >
+                <option value="">Non renseigné</option>
+                <option value="oui">Oui (significatif)</option>
+                <option value="non">Non (non significatif)</option>
+              </select>
+            </div>
+            <div className="passerelles-champ">
+              <label htmlFor="edition-interface">Interface amont/aval</label>
+              <select
+                id="edition-interface"
+                value={edition.interfaceAmontAval}
+                onChange={(e) => setEdition((s) => ({ ...s, interfaceAmontAval: e.target.value }))}
+              >
+                <option value="">Non renseigné</option>
+                <option value="Non">Non</option>
+                <option value="Oui, en amont OU aval">Oui, en amont OU aval</option>
+                <option value="Oui, en amont ET aval">Oui, en amont ET aval</option>
+              </select>
+            </div>
+          </div>
         </section>
       )}
 
@@ -125,20 +316,33 @@ export function MetierDetailPage() {
 
       <section className="fiche__section">
         <h2>Métiers proches</h2>
+
+        <div className="passerelles-parametres passerelles-parametres--compact">
+          <FiltresPasserelles
+            idPrefix="fiche-proches"
+            dcMin={dcMin}
+            onDcMinChange={setDcMin}
+            heuresMax={heuresMax}
+            onHeuresMaxChange={setHeuresMax}
+            degreMin={degreMin}
+            onDegreMinChange={setDegreMin}
+            memeFamille={memeFamille}
+            onMemeFamilleChange={setMemeFamille}
+            labelFamille="Même famille que ce métier"
+          />
+        </div>
+
         {proches.chargement && <Loader />}
         {proches.erreur && <ErrorMessage message={proches.erreur} />}
-        {proches.donnees && proches.donnees.data.length === 0 && (
-          <p className="vide">
-            Aucune passerelle calculée. Les tables de proximité doivent être générées — voir
-            <code> services/passerelle.service.ts</code>.
-          </p>
+        {proches.donnees && resultatsProches.length === 0 && (
+          <p className="vide">Aucun métier ne correspond à ces paramètres.</p>
         )}
         <ul className="liste">
-          {(proches.donnees?.data ?? []).map((p) => (
+          {resultatsProches.map((p) => (
             <li key={p.codeMetier}>
               <Link to={`/metiers/${encodeURIComponent(p.codeMetier)}`}>{p.intitule}</Link>
               {p.dureeAcquisitionHeures !== null && (
-                <span className="detail"> — {p.dureeAcquisitionHeures} h d’acquisition</span>
+                <span className="detail"> — {Math.round(Number(p.dureeAcquisitionHeures))} h d’acquisition</span>
               )}
             </li>
           ))}

@@ -54,15 +54,14 @@ Tout rebuild si nécessaire, puis démarre les 4 services :
 docker compose --profile app down -v      # -v supprime le volume de la base
 docker compose --profile app up -d --build
 docker compose exec back node dist/database/importers/index.js
-
 ```
 
-| Service | URL | Détail |
-|---|---|---|
-| `front` | <http://localhost:8080> | nginx, sert le build Vite et route `/api` vers le back |
-| `back` | <http://localhost:4000> | exposé pour le débogage uniquement |
-| `db` | `localhost:3306` | MariaDB 11 |
-| `adminer` | <http://localhost:8081> | inspection de la base |
+| Service     | URL                                           | Détail                                                 |
+| ----------- | --------------------------------------------- | ------------------------------------------------------- |
+| `front`   |                                               | nginx, sert le build Vite et route`/api` vers le back |
+| `back`    | [http://localhost:4000](http://localhost:4000) | exposé pour le débogage uniquement                    |
+| `db`      | `localhost:3306`                            | MariaDB 11                                              |
+| `adminer` | [http://localhost:8081](http://localhost:8081) | inspection de la base                                   |
 
 Le front appelle l'API en chemins relatifs ([client.ts](front/src/api/client.ts)) : `/api`
 doit donc être servi sur la même origine que le front. C'est déjà le cas partout — le proxy
@@ -112,6 +111,7 @@ GRANT ALL PRIVILEGES ON fiche_metiers.* TO 'fiche'@'localhost';
 GRANT ALL PRIVILEGES ON fiche_metiers.* TO 'fiche'@'127.0.0.1';
 FLUSH PRIVILEGES;"
 ```
+
 Les deux hôtes sont nécessaires : Node se connecte à `127.0.0.1`, que MariaDB ne considère
 pas comme équivalent à `localhost`.
 
@@ -120,7 +120,8 @@ pas comme équivalent à `localhost`.
 ```bash
 docker compose up -d
 ```
-MariaDB sur `localhost:3306`, Adminer sur <http://localhost:8081>. La base et l'utilisateur
+
+MariaDB sur `localhost:3306`, Adminer sur [http://localhost:8081](http://localhost:8081). La base et l'utilisateur
 sont créés automatiquement. Ne pas lancer les deux en même temps : le port 3306 entrerait
 en conflit.
 
@@ -150,23 +151,24 @@ cd front
 npm install
 npm run dev                # http://localhost:5173
 ```
+
 Le serveur Vite proxifie `/api` vers `http://localhost:4000` — pas de configuration CORS en dev.
 
 ## API
 
-| Méthode | Route | Description |
-|---|---|---|
-| GET | `/api/health` | ping |
-| GET | `/api/metiers?search=&famille=&dossier=&page=&limit=` | liste paginée |
-| GET | `/api/metiers/:code` | fiche métier complète |
-| GET | `/api/metiers/:code/activites` | activités et leurs domaines de connaissance |
-| GET | `/api/activites?search=&famille=&formacode=` | liste paginée |
-| GET | `/api/activites/:code` | couple activité-compétence complet |
-| GET | `/api/formacodes?search=&nsf=&fondamental=` | liste paginée |
-| GET | `/api/formacodes/:code` | formacode et durées par niveau |
-| GET | `/api/referentiels` | toutes les nomenclatures en un appel |
-| GET | `/api/passerelles/:code/proches?heuresMax=&dcMin=&limite=` | métiers proches |
-| GET | `/api/passerelles/:source/vers/:cible` | écart détaillé entre deux métiers |
+| Méthode | Route                                                        | Description                                  |
+| -------- | ------------------------------------------------------------ | -------------------------------------------- |
+| GET      | `/api/health`                                              | ping                                         |
+| GET      | `/api/metiers?search=&famille=&dossier=&page=&limit=`      | liste paginée                               |
+| GET      | `/api/metiers/:code`                                       | fiche métier complète                      |
+| GET      | `/api/metiers/:code/activites`                             | activités et leurs domaines de connaissance |
+| GET      | `/api/activites?search=&famille=&formacode=`               | liste paginée                               |
+| GET      | `/api/activites/:code`                                     | couple activité-compétence complet         |
+| GET      | `/api/formacodes?search=&nsf=&fondamental=`                | liste paginée                               |
+| GET      | `/api/formacodes/:code`                                    | formacode et durées par niveau              |
+| GET      | `/api/referentiels`                                        | toutes les nomenclatures en un appel         |
+| GET      | `/api/passerelles/:code/proches?heuresMax=&dcMin=&limite=` | métiers proches                             |
+| GET      | `/api/passerelles/:source/vers/:cible`                     | écart détaillé entre deux métiers        |
 
 ## Base de données
 
@@ -192,18 +194,17 @@ En développement, `npm run db:sync` régénère le schéma depuis les modèles 
 
 ## Reste à faire
 
-- **Importeurs Excel** — seul `formacodes.importer.ts` est écrit ; il sert de patron.
-  Les 5 importeurs restants sont listés avec leurs dépendances dans
-  `back/src/database/importers/index.ts`. Tant qu'ils ne sont pas écrits, `/api/metiers` et
-  `/api/activites` répondent correctement mais sur une base vide.
 - **Domaines non codés dans la source** — 19 domaines du fichier formacodes (Ferraillage,
   Coffrage, Béton, Menuiserie, Lecture plan BTP…) portent une durée mais aucun Formacode.
   Ils ne peuvent pas être importés : le code EST la clé primaire. À compléter dans le classeur.
-- **Calcul des passerelles** — `recalculerProximites()` n'est pas implémenté : la formule du
-  « degré d'élargissement » vit dans les formules Excel et le VBA du classeur, elle doit être
-  confirmée avec le métier. Le calcul de durée, lui, est fonctionnel (`comparerMetiers()`).
-- **Authentification** — aucune table utilisateur n'est prévue ; à ajouter si l'API doit être
-  protégée sur le VPS.
+- **Calcul des passerelles** — `recalculerProximites()` est implémenté (formule reconstituée
+  depuis `Outil_passerelles_062026.xlsx`, fourni hors dépôt — voir `services/passerelle.service.ts`
+  et `docs/SCHEMA.md` §5). À rejouer après tout import via `npm run db:recalc-proximites`.
+- **Authentification** — un seul compte, pas de table utilisateur : identifiant/mot de passe
+  dans `AUTH_USERNAME`/`AUTH_PASSWORD` (`.env`), session par cookie signé HMAC (voir
+  `back/src/services/session.service.ts`). `/api/health` reste public (healthcheck Docker),
+  tout le reste de `/api` exige la session. Si plusieurs comptes distincts sont nécessaires un
+  jour, une vraie table `utilisateur` remplacera ce compte unique.
 - **Déploiement VPS** — la conteneurisation est faite, la même compose tourne telle quelle.
   Restent trois points côté serveur : un reverse proxy en frontal pour le domaine et le TLS
   (il transmet tout à `front:80`, sans configuration particulière pour `/api`), de vrais mots

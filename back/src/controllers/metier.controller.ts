@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Op, WhereOptions, InferAttributes, QueryTypes } from 'sequelize';
+import { z } from 'zod';
 import { sequelize } from '../database/connection';
 import {
   Metier,
@@ -72,6 +73,19 @@ export async function listerMetiers(req: Request, res: Response): Promise<void> 
   res.json(construireReponsePaginee(rows, count, pagination));
 }
 
+/**
+ * GET /api/metiers/options — la totalité des métiers, champs minimaux.
+ * Pour un sélecteur (ex. « métier de départ » de l'écran passerelles) : pas de pagination,
+ * la table ne fait que 333 lignes, contrairement à `listerMetiers` prévue pour un catalogue paginé.
+ */
+export async function listerMetiersOptions(_req: Request, res: Response): Promise<void> {
+  const metiers = await Metier.findAll({
+    attributes: ['codeMetier', 'intitule', 'codeFamille'],
+    order: [['intitule', 'ASC']],
+  });
+  res.json({ data: metiers });
+}
+
 /** GET /api/metiers/:code — fiche métier complète. */
 export async function obtenirMetier(
   req: Request<{ code: string }>,
@@ -98,6 +112,47 @@ export async function obtenirMetier(
   });
 
   if (!metier) throw HttpError.notFound(`Métier ${req.params.code}`);
+  res.json(metier);
+}
+
+/**
+ * Les seules valeurs réellement présentes en base pour INTERFACE (vérifié sur les 333
+ * métiers) — un texte libre casserait silencieusement `recalculerProximites()`, qui
+ * compare cette chaîne au mot près (services/passerelle.service.ts, `RANG_INTERFACE`).
+ */
+const VALEURS_INTERFACE = ['Non', 'Oui, en amont OU aval', 'Oui, en amont ET aval'] as const;
+
+const schemaModificationMetier = z.object({
+  definition: z.string().trim().max(5000).nullable().optional(),
+  remarque: z.string().trim().max(5000).nullable().optional(),
+  responsTransverse: z.enum(['oui', 'non']).nullable().optional(),
+  interfaceAmontAval: z.enum(VALEURS_INTERFACE).nullable().optional(),
+});
+
+/**
+ * PATCH /api/metiers/:code — champs simples uniquement (définition, remarque,
+ * responsabilité transverse, interface amont/aval). Les listes (appellations, ROME,
+ * conditions, couples…) ne sont pas éditables par cette route.
+ *
+ * `responsTransverse` et `interfaceAmontAval` alimentent `recalculerProximites()` : les
+ * modifier ne recalcule pas `metier_proximite`, qui reste basé sur l'ancienne valeur
+ * jusqu'au prochain `npm run db:recalc-proximites`.
+ */
+export async function modifierMetier(
+  req: Request<{ code: string }>,
+  res: Response,
+): Promise<void> {
+  const metier = await Metier.findByPk(req.params.code);
+  if (!metier) throw HttpError.notFound(`Métier ${req.params.code}`);
+
+  const donnees = schemaModificationMetier.parse(req.body);
+
+  if ('definition' in donnees) metier.definition = donnees.definition || null;
+  if ('remarque' in donnees) metier.remarque = donnees.remarque || null;
+  if ('responsTransverse' in donnees) metier.responsTransverse = donnees.responsTransverse ?? null;
+  if ('interfaceAmontAval' in donnees) metier.interfaceAmontAval = donnees.interfaceAmontAval ?? null;
+
+  await metier.save();
   res.json(metier);
 }
 
