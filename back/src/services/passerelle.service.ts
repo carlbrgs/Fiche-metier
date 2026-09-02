@@ -1,6 +1,49 @@
-import { QueryTypes } from 'sequelize';
+import { QueryTypes, Transaction } from 'sequelize';
 import { sequelize } from '../database/connection';
 import { Metier, MetierProximite } from '../models';
+
+// ---------- Fraîcheur de la table matérialisée ----------
+//
+// `metier_proximite` n'est jamais recalculée toute seule. Trois choses la périment :
+// les formacodes portés par les couples de la fiche, `respons_transverse`, et les
+// niveaux des ressources transverses TRANSV_2 / 8 / 10 (voir `CODES_TRANSVERSE_BONUS`)
+// — plus `interface_amont_aval`. Chaque écriture sur l'un d'eux date la fiche via
+// `marquerProximitePerimee()`, et le front compare cette date au dernier calcul.
+
+/** Date la fiche comme modifiée sur un point qui entre dans le calcul des passerelles. */
+export async function marquerProximitePerimee(
+  codeMetier: string,
+  transaction?: Transaction,
+): Promise<void> {
+  await Metier.update(
+    { proximitePerimeeLe: new Date() },
+    // `silent` : `updated_at` ne doit pas bouger pour un marqueur interne.
+    { where: { codeMetier }, transaction, silent: true },
+  );
+}
+
+/** `perimee` : la fiche a changé depuis le dernier `recalculerProximites()`. */
+export async function etatProximites(
+  codeMetier: string,
+): Promise<{ calculeLe: Date | null; modifieeLe: Date | null; perimee: boolean }> {
+  const [etat] = await sequelize.query<{ calculeLe: Date | null; modifieeLe: Date | null }>(
+    `SELECT (SELECT MAX(calcule_le) FROM metier_proximite) AS calculeLe,
+            m.proximite_perimee_le                         AS modifieeLe
+       FROM metier m
+      WHERE m.code_metier = :codeMetier`,
+    { replacements: { codeMetier }, type: QueryTypes.SELECT },
+  );
+
+  const calculeLe = etat?.calculeLe ? new Date(etat.calculeLe) : null;
+  const modifieeLe = etat?.modifieeLe ? new Date(etat.modifieeLe) : null;
+
+  return {
+    calculeLe,
+    modifieeLe,
+    // Jamais calculé mais déjà modifié compte aussi comme périmé.
+    perimee: modifieeLe !== null && (calculeLe === null || modifieeLe > calculeLe),
+  };
+}
 
 export interface ParametresProximite {
   /** « Nombre d'heures max d'acquisition » (défaut 10 000 dans le classeur). */
@@ -148,7 +191,8 @@ export async function comparerMetiers(
 
 const CODE_ACCES_NIVEAU_BASSE = 'ACCES_3';
 const CODE_ACCES_NIVEAU_HAUTE = 'ACCES_4';
-const CODES_TRANSVERSE_BONUS = ['TRANSV_2', 'TRANSV_8', 'TRANSV_10'] as const;
+/** Les seules ressources transverses qui pèsent dans le degré d'élargissement. */
+export const CODES_TRANSVERSE_BONUS = ['TRANSV_2', 'TRANSV_8', 'TRANSV_10'] as const;
 
 const RANG_INTERFACE: Record<string, number> = {
   Non: 0,

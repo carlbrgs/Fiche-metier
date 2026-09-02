@@ -20,6 +20,8 @@ export class Metier extends Model<InferAttributes<Metier>, InferCreationAttribut
   declare interfaceAmontAval: string | null;
   declare redacteur: string | null;
   declare nbCouple: number | null;
+  /** Dernière modification affectant le calcul des passerelles (migration 010). */
+  declare proximitePerimeeLe: Date | null;
   declare remarque: string | null;
 
   // Traçabilité de la collecte. NULL pour les 34 fiches qui ne sont pas passées par l'outil.
@@ -52,6 +54,7 @@ Metier.init(
     interfaceAmontAval: { type: DataTypes.STRING(255), allowNull: true },
     redacteur: { type: DataTypes.STRING(100), allowNull: true },
     nbCouple: { type: DataTypes.TINYINT, allowNull: true },
+    proximitePerimeeLe: { type: DataTypes.DATE, allowNull: true },
     remarque: { type: DataTypes.TEXT, allowNull: true },
     cleCollecte: { type: DataTypes.STRING(20), allowNull: true },
     dateSaisie: { type: DataTypes.DATE, allowNull: true },

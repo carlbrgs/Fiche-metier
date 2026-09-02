@@ -291,6 +291,26 @@ h2 {
   cursor: default;
 }
 
+/* Variante compacte de `.bouton--secondaire` pour une action au fil d'une liste. C'est un
+   lien, pas un <button> : `text-decoration: none` annule le soulignement des liens. */
+.bouton--detail {
+  flex: none;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--couleur-bordure);
+  background: var(--couleur-surface);
+  color: var(--couleur-texte-doux);
+  border-radius: var(--rayon);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.bouton--detail:hover {
+  border-color: var(--couleur-accent);
+  color: var(--couleur-accent);
+  text-decoration: none;
+}
+
 .edition__texte {
   width: 100%;
   padding: 0.6rem 0.75rem;
@@ -478,7 +498,154 @@ h2 {
   margin: 0;
 }
 
+/* ---------- Édition des couples ---------- */
+
+/* Posé sur l'en-tête bleu du couple : contour clair plutôt que fond plein, pour rester
+   lisible sans concurrencer le titre. */
+.bouton--retirer {
+  flex: none;
+  padding: 0.1rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: transparent;
+  color: #fff;
+  border-radius: var(--rayon);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.bouton--retirer:hover:not(:disabled) {
+  background: #fff;
+  color: var(--couleur-accent);
+}
+.bouton--retirer:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.bandeau-alerte {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0c37a;
+  border-left-width: 4px;
+  background: #fdf6e6;
+  border-radius: var(--rayon);
+  font-size: 0.9rem;
+}
+
+.ajout-couple {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: var(--couleur-fond);
+}
+
+.ajout-couple__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.ajout-couple__entete h3 {
+  margin: 0;
+}
+
+.ajout-couple__recherche {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.75rem 0;
+}
+.ajout-couple__recherche input {
+  flex: 1 1 18rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  font: inherit;
+}
+
+/* Liste de résultats potentiellement longue : on la borne et on la fait défiler plutôt
+   que de repousser la fiche entière vers le bas. */
+.ajout-couple__resultats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 18rem;
+  overflow-y: auto;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: var(--couleur-surface);
+}
+.ajout-couple__resultats li + li {
+  border-top: 1px solid var(--couleur-bordure);
+}
+
+.ajout-couple__activite {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ajout-couple__activite:hover {
+  background: var(--couleur-accent-doux);
+}
+.ajout-couple__activite--choisie {
+  background: var(--couleur-accent-doux);
+  box-shadow: inset 3px 0 0 var(--couleur-accent);
+}
+.ajout-couple__activite .couple__code {
+  flex: none;
+  color: var(--couleur-accent);
+}
+.ajout-couple__intitule {
+  flex: 1;
+}
+
+.ajout-couple__variantes {
+  margin-top: 1rem;
+}
+.ajout-couple__variantes h4 {
+  margin: 0 0 0.25rem;
+}
+
+.ajout-couple__variante {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+}
+.ajout-couple__variante + .ajout-couple__variante {
+  border-top: 1px solid var(--couleur-bordure);
+}
+.ajout-couple__variante p {
+  margin: 0.25rem 0;
+}
+
 /* ---------- Ressources transverses ---------- */
+
+.transversales__edition select {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: var(--couleur-surface);
+  font: inherit;
+}
+.transversales__edition p {
+  margin: 0.4rem 0 0;
+}
 
 .transversales__groupe + .transversales__groupe {
   margin-top: 1.5rem;

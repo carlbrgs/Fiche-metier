@@ -8,6 +8,14 @@ import {
   obtenirActivitesMetier,
   obtenirConnaissancesMetier,
 } from '../controllers/metier.controller';
+import {
+  listerAjoutables,
+  listerVariantesActivite,
+  ajouter,
+  supprimer,
+  obtenirEtatProximites,
+} from '../controllers/couple.controller';
+import { modifierTransversales } from '../controllers/transversale.controller';
 
 export const metierRoutes = Router();
 
@@ -18,3 +26,13 @@ metierRoutes.get('/:code', asyncHandler(obtenirMetier));
 metierRoutes.patch('/:code', asyncHandler(modifierMetier));
 metierRoutes.get('/:code/activites', asyncHandler(obtenirActivitesMetier));
 metierRoutes.get('/:code/connaissances', asyncHandler(obtenirConnaissancesMetier));
+
+// Édition des couples activité-compétence de la fiche.
+metierRoutes.get('/:code/couples-ajoutables', asyncHandler(listerAjoutables));
+metierRoutes.get('/:code/couples-ajoutables/:codeActivite', asyncHandler(listerVariantesActivite));
+metierRoutes.post('/:code/couples', asyncHandler(ajouter));
+metierRoutes.delete('/:code/couples/:id', asyncHandler(supprimer));
+metierRoutes.get('/:code/proximites/etat', asyncHandler(obtenirEtatProximites));
+
+// Niveaux des ressources transverses — enregistrés en bloc, voir le contrôleur.
+metierRoutes.put('/:code/transversales', asyncHandler(modifierTransversales));

@@ -176,6 +176,37 @@ export interface ConnaissanceMetier {
   codeNsf: string | null;
 }
 
+// ---------- Édition des couples ----------
+
+/** Une activité du catalogue absente de la fiche, donc ajoutable. */
+export interface ActiviteAjoutable {
+  codeActivite: string;
+  intituleActivite: string;
+  intituleCompetence: string | null;
+  /** Nombre de fiches qui emploient déjà ce code : autant de rédactions recopiables. */
+  nbVariantes: number;
+}
+
+/**
+ * Une rédaction existante d'un code activité, telle qu'une autre fiche la porte. C'est
+ * l'unité recopiée à l'ajout : les formacodes pendent du couple depuis la migration 008.
+ */
+export interface VarianteCouple {
+  coupleId: number;
+  codeMetier: string;
+  intituleMetier: string;
+  intituleActivite: string | null;
+  intituleCompetence: string | null;
+  formacodes: Array<{ codeFormacode: string; intitule: string | null; niveau: number | null }>;
+}
+
+/** `perimee` : la fiche a changé depuis le dernier calcul de `metier_proximite`. */
+export interface EtatProximites {
+  calculeLe: string | null;
+  modifieeLe: string | null;
+  perimee: boolean;
+}
+
 /** Champs minimaux pour un sélecteur de métier (ex. « métier de départ » des passerelles). */
 export interface MetierOption {
   codeMetier: string;

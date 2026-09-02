@@ -136,7 +136,9 @@ const schemaModificationMetier = z.object({
  *
  * `responsTransverse` et `interfaceAmontAval` alimentent `recalculerProximites()` : les
  * modifier ne recalcule pas `metier_proximite`, qui reste basé sur l'ancienne valeur
- * jusqu'au prochain `npm run db:recalc-proximites`.
+ * jusqu'au prochain recalcul. La fiche est donc marquée « passerelles périmées » quand
+ * l'un des deux change — et seulement dans ce cas : corriger une définition n'a aucun
+ * effet sur le calcul.
  */
 export async function modifierMetier(
   req: Request<{ code: string }>,
@@ -151,6 +153,10 @@ export async function modifierMetier(
   if ('remarque' in donnees) metier.remarque = donnees.remarque || null;
   if ('responsTransverse' in donnees) metier.responsTransverse = donnees.responsTransverse ?? null;
   if ('interfaceAmontAval' in donnees) metier.interfaceAmontAval = donnees.interfaceAmontAval ?? null;
+
+  const proximiteTouchee =
+    metier.changed('responsTransverse') || metier.changed('interfaceAmontAval');
+  if (proximiteTouchee) metier.proximitePerimeeLe = new Date();
 
   await metier.save();
   res.json(metier);

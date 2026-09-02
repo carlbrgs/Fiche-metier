@@ -20,6 +20,14 @@ function ListeDetails({ details }: { details: Detail[] }) {
   );
 }
 
+interface Props {
+  couples: Couple[];
+  /** Fourni uniquement en mode édition : affiche un bouton de retrait sur chaque couple. */
+  onSupprimer?: (couple: Couple) => void;
+  /** Id du couple en cours de suppression, pour neutraliser les boutons le temps de l'appel. */
+  suppressionEnCours?: number | null;
+}
+
 /**
  * Les couples activité-compétence du métier. Leur nombre varie d'une fiche à l'autre
  * (3 à 6 selon le métier), l'outil de collecte prévoyant 6 blocs au maximum.
@@ -28,18 +36,32 @@ function ListeDetails({ details }: { details: Detail[] }) {
  * 6 tâches détaillées face à 4 compétences détaillées. Chaque colonne porte donc sa
  * propre liste, comme sur la fiche Excel.
  */
-export function CouplesFiche({ couples }: { couples: Couple[] }) {
+export function CouplesFiche({ couples, onSupprimer, suppressionEnCours }: Props) {
   if (couples.length === 0) return null;
 
   return (
     <>
       {[...couples]
         .sort((a, b) => a.ordre - b.ordre)
-        .map((c) => (
+        .map((c, position) => (
           <article key={c.id} className="couple">
             <header className="couple__entete">
-              <span>{ordinal(c.ordre)} couple activité-compétence professionnelles</span>
+              {/* Rang d'affichage et non `c.ordre` : une suppression laisse un trou dans
+                  la numérotation stockée, et un ajout se place au-delà des 6 blocs de
+                  collecte. La fiche doit rester « Premier, Deuxième, Troisième… ». */}
+              <span>{ordinal(position + 1)} couple activité-compétence professionnelles</span>
               <span className="couple__code">{c.codeActivite}</span>
+              {onSupprimer && (
+                <button
+                  type="button"
+                  className="bouton--retirer"
+                  onClick={() => onSupprimer(c)}
+                  disabled={suppressionEnCours !== null && suppressionEnCours !== undefined}
+                  title={`Retirer ${c.codeActivite} de cette fiche`}
+                >
+                  {suppressionEnCours === c.id ? 'Suppression…' : 'Retirer'}
+                </button>
+              )}
             </header>
 
             <table className="tableau couple__table">

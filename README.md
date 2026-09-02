@@ -54,6 +54,7 @@ Tout rebuild si nécessaire, puis démarre les 4 services :
 docker compose --profile app down -v      # -v supprime le volume de la base
 docker compose --profile app up -d --build
 docker compose exec back node dist/database/importers/index.js
+docker compose exec back node dist/database/recalculerProximites.js
 ```
 
 | Service     | URL                                           | Détail                                                 |
@@ -80,7 +81,15 @@ Les classeurs Excel sont **montés** en lecture seule dans `/data`, pas copiés 
 
 ```bash
 docker compose exec back node dist/database/importers/index.js
+docker compose exec back node dist/database/recalculerProximites.js
 ```
+
+Le recalcul des proximités est une étape **distincte de l'import**, à ne pas oublier :
+`metier_proximite` est une table matérialisée (les matrices 333 × 333 du classeur), remplie
+uniquement par ce script. Ni les migrations ni l'import ne la peuplent — tant qu'elle est
+vide, l'écran « Métiers passerelles » ne renvoie aucun résultat, quel que soit le métier de
+départ. À rejouer après tout import qui touche `metier`, `metier_acces`,
+`metier_transversale` ou `activite_connaissance`.
 
 Arrêt : `docker compose --profile app down` (ajouter `-v` pour effacer aussi la base).
 
@@ -129,11 +138,12 @@ en conflit.
 
 ```bash
 cd back
-cp .env.example .env       # ajuster si besoin
+cp .env.example .env            # ajuster si besoin
 npm install
-npm run db:migrate         # crée les 26 tables
-npm run import:excel       # importe les formacodes (voir « Reste à faire »)
-npm run dev                # http://localhost:4000/api
+npm run db:migrate              # crée les 26 tables
+npm run import:excel            # importe les formacodes (voir « Reste à faire »)
+npm run db:recalc-proximites    # remplit metier_proximite (écran « Passerelles »)
+npm run dev                     # http://localhost:4000/api
 ```
 
 L'import consigne systématiquement son bilan dans la table `import_batch` : lignes rejetées
@@ -199,7 +209,8 @@ En développement, `npm run db:sync` régénère le schéma depuis les modèles 
   Ils ne peuvent pas être importés : le code EST la clé primaire. À compléter dans le classeur.
 - **Calcul des passerelles** — `recalculerProximites()` est implémenté (formule reconstituée
   depuis `Outil_passerelles_062026.xlsx`, fourni hors dépôt — voir `services/passerelle.service.ts`
-  et `docs/SCHEMA.md` §5). À rejouer après tout import via `npm run db:recalc-proximites`.
+  et `docs/SCHEMA.md` §5). Le recalcul reste **manuel** : rien ne le déclenche au démarrage
+  ni en fin d'import — voir « Pile complète en Docker » et « Démarrage en développement ».
 - **Authentification** — un seul compte, pas de table utilisateur : identifiant/mot de passe
   dans `AUTH_USERNAME`/`AUTH_PASSWORD` (`.env`), session par cookie signé HMAC (voir
   `back/src/services/session.service.ts`). `/api/health` reste public (healthcheck Docker),

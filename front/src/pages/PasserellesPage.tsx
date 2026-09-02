@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { listerMetiersOptions, listerMetiersProches } from '@/api/metiers';
 import { useFetch } from '@/hooks/useFetch';
 import { Loader } from '@/components/Loader';
@@ -16,7 +16,15 @@ const RESULTAT_VIDE: { data: MetierProche[] } = { data: [] };
  * le tableau détaillé.
  */
 export function PasserellesPage() {
-  const [codeSource, setCodeSource] = useState('');
+  // Le métier de départ vit dans l'URL (`?metier=`) plutôt qu'en état local : la page devient
+  // adressable, ce qui permet d'y arriver depuis « Métiers proches » d'une fiche métier.
+  const [parametresUrl, setParametresUrl] = useSearchParams();
+  const codeSource = parametresUrl.get('metier') ?? '';
+  const setCodeSource = (code: string) =>
+    // `replace` : changer de métier de départ n'empile pas d'entrée d'historique, le bouton
+    // « retour » ramène donc à la page d'où l'on vient, pas à la sélection précédente.
+    setParametresUrl(code ? { metier: code } : {}, { replace: true });
+
   const [dcMin, setDcMin] = useState(1);
   const [heuresMax, setHeuresMax] = useState(2000);
   const [degreMin, setDegreMin] = useState(0.1);

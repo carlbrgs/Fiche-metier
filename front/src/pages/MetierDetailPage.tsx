@@ -6,19 +6,31 @@ import {
   obtenirActivitesMetier,
   obtenirConnaissancesMetier,
   listerMetiersProches,
+  ajouterCouple,
+  supprimerCouple,
+  obtenirEtatProximites,
+  recalculerProximites,
+  modifierTransversales,
 } from '@/api/metiers';
 import { obtenirReferentiels } from '@/api/activites';
 import { ApiError } from '@/api/client';
 import { useFetch } from '@/hooks/useFetch';
 import { Loader } from '@/components/Loader';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { TransversalesFiche } from '@/components/TransversalesFiche';
+import {
+  TransversalesFiche,
+  valeurInitiale,
+  VALEUR_ABSENTE,
+  VALEUR_NON_CONCERNE,
+} from '@/components/TransversalesFiche';
 import { ConditionsFiche } from '@/components/ConditionsFiche';
 import { AccesFiche } from '@/components/AccesFiche';
 import { CouplesFiche } from '@/components/CouplesFiche';
+import { AjoutCouple } from '@/components/AjoutCouple';
 import { ConnaissancesFiche } from '@/components/ConnaissancesFiche';
 import { FiltresPasserelles } from '@/components/FiltresPasserelles';
 import { libelleFamille } from '@/utils/format';
+import type { MetierTransversale } from '@/types/api';
 
 export function MetierDetailPage() {
   const { code = '' } = useParams();
@@ -29,6 +41,23 @@ export function MetierDetailPage() {
   const [memeFamille, setMemeFamille] = useState(false);
 
   const [rechargerMetier, setRechargerMetier] = useState(0);
+
+  // Édition de la section « Activités et compétences ». Un mode par section, et non un mode
+  // global : chaque section recharge ses propres données, qui sont coûteuses à requêter.
+  const [rechargerCouples, setRechargerCouples] = useState(0);
+  const [modeEditionCouples, setModeEditionCouples] = useState(false);
+  const [ajoutOuvert, setAjoutOuvert] = useState(false);
+  const [ajoutEnCours, setAjoutEnCours] = useState(false);
+  const [suppressionEnCours, setSuppressionEnCours] = useState<number | null>(null);
+  const [erreurCouples, setErreurCouples] = useState<string | null>(null);
+  const [recalculEnCours, setRecalculEnCours] = useState(false);
+
+  // Édition de la section « Ressources transverses ». `valeursTransv` est indexé par code :
+  // '' = ressource absente de la fiche, 'nc' = non concerné, '1'..'4' = niveau retenu.
+  const [modeEditionTransv, setModeEditionTransv] = useState(false);
+  const [valeursTransv, setValeursTransv] = useState<Record<string, string>>({});
+  const [enregistrementTransv, setEnregistrementTransv] = useState(false);
+  const [erreurTransv, setErreurTransv] = useState<string | null>(null);
   const [modeEdition, setModeEdition] = useState(false);
   const [enregistrementEnCours, setEnregistrementEnCours] = useState(false);
   const [erreurEnregistrement, setErreurEnregistrement] = useState<string | null>(null);
@@ -43,10 +72,20 @@ export function MetierDetailPage() {
   // Fournit la liste complète des critères d'accès : les questions sans réponse
   // doivent rester visibles sur la fiche.
   const referentiels = useFetch((signal) => obtenirReferentiels(signal), []);
-  const activites = useFetch((signal) => obtenirActivitesMetier(code, signal), [code]);
+  // Les deux dépendent de `rechargerCouples` : le tableau des domaines structurants est
+  // dérivé des formacodes portés par les couples (GROUP BY côté API), il doit donc être
+  // refetché en même temps qu'eux à chaque ajout ou suppression.
+  const activites = useFetch(
+    (signal) => obtenirActivitesMetier(code, signal),
+    [code, rechargerCouples],
+  );
   const connaissances = useFetch(
     (signal) => obtenirConnaissancesMetier(code, signal),
-    [code],
+    [code, rechargerCouples],
+  );
+  const etatProximites = useFetch(
+    (signal) => obtenirEtatProximites(code, signal),
+    [code, rechargerCouples, rechargerMetier],
   );
   const proches = useFetch(
     (signal) => listerMetiersProches(code, { dcMin, heuresMax, degreMin, limite: 15 }, signal),
@@ -124,6 +163,104 @@ export function MetierDetailPage() {
     }
   }
 
+  async function ajouterUnCouple(coupleSourceId: number) {
+    setAjoutEnCours(true);
+    setErreurCouples(null);
+    try {
+      await ajouterCouple(code, coupleSourceId);
+      setAjoutOuvert(false);
+      // Recharge couples, domaines structurants et état des passerelles d'un seul coup.
+      setRechargerCouples((v) => v + 1);
+    } catch (err) {
+      setErreurCouples(err instanceof ApiError ? err.message : 'Ajout impossible');
+    } finally {
+      setAjoutEnCours(false);
+    }
+  }
+
+  async function retirerUnCouple(coupleId: number, libelle: string) {
+    // Le retrait emporte les détails, niveaux de maîtrise, mots-clés et domaines de
+    // connaissance du couple (cascade en base) : la confirmation n'est pas superflue.
+    if (!window.confirm(`Retirer « ${libelle} » de cette fiche ? Cette action est définitive.`)) {
+      return;
+    }
+    setSuppressionEnCours(coupleId);
+    setErreurCouples(null);
+    try {
+      await supprimerCouple(code, coupleId);
+      setRechargerCouples((v) => v + 1);
+    } catch (err) {
+      setErreurCouples(err instanceof ApiError ? err.message : 'Suppression impossible');
+    } finally {
+      setSuppressionEnCours(null);
+    }
+  }
+
+  /**
+   * En édition, la section liste les 17 ressources du référentiel et non les seules lignes
+   * de la fiche : sans ça, la ressource absente de D309 (16 lignes sur 17) resterait
+   * définitivement inéditable. Les ressources absentes s'affichent « Non renseigné ».
+   */
+  function transversalesEditables(): MetierTransversale[] {
+    const portees = new Map((m.transversales ?? []).map((t) => [t.codeTransversale, t]));
+    return (referentiels.donnees?.transversales ?? []).map(
+      (c) =>
+        portees.get(c.codeTransversale) ?? {
+          codeTransversale: c.codeTransversale,
+          niveau: null,
+          nonConcerne: false,
+          competence: c,
+        },
+    );
+  }
+
+  function commencerEditionTransv() {
+    const depart: Record<string, string> = {};
+    for (const t of transversalesEditables()) depart[t.codeTransversale] = valeurInitiale(t);
+    setValeursTransv(depart);
+    setErreurTransv(null);
+    setModeEditionTransv(true);
+  }
+
+  async function enregistrerTransversales() {
+    setEnregistrementTransv(true);
+    setErreurTransv(null);
+    try {
+      // Les ressources laissées « Non renseigné » ne sont pas envoyées : elles resteraient
+      // absentes de la fiche plutôt que d'être créées avec une valeur qu'on n'a pas choisie.
+      const lignes = Object.entries(valeursTransv)
+        .filter(([, valeur]) => valeur !== VALEUR_ABSENTE)
+        .map(([codeTransversale, valeur]) => ({
+          codeTransversale,
+          niveau: valeur === VALEUR_NON_CONCERNE ? null : Number(valeur),
+          nonConcerne: valeur === VALEUR_NON_CONCERNE,
+        }));
+
+      await modifierTransversales(code, lignes);
+      setModeEditionTransv(false);
+      // Les transversales arrivent avec la fiche : c'est elle qu'il faut refetcher. Le
+      // rechargement met aussi à jour le bandeau de péremption des passerelles.
+      setRechargerMetier((v) => v + 1);
+    } catch (err) {
+      setErreurTransv(err instanceof ApiError ? err.message : 'Enregistrement impossible');
+    } finally {
+      setEnregistrementTransv(false);
+    }
+  }
+
+  async function lancerRecalcul() {
+    setRecalculEnCours(true);
+    setErreurCouples(null);
+    try {
+      await recalculerProximites();
+      setRechargerCouples((v) => v + 1);
+    } catch (err) {
+      setErreurCouples(err instanceof ApiError ? err.message : 'Recalcul impossible');
+    } finally {
+      setRecalculEnCours(false);
+    }
+  }
+
   return (
     <article className="page fiche">
       <header className="fiche__entete">
@@ -171,6 +308,28 @@ export function MetierDetailPage() {
         </div>
         {m.famille && <p className="fiche__famille">{libelleFamille(m.famille)}</p>}
         {erreurEnregistrement && <ErrorMessage message={erreurEnregistrement} />}
+
+        {/* `metier_proximite` est matérialisée : elle reste sur les anciennes valeurs tant
+            qu'elle n'est pas rejouée. Le bandeau est en tête de fiche parce que plusieurs
+            sections la périment — les couples, les ressources transverses TRANSV_2/8/10 et
+            les deux paramètres de calcul. Le recalcul reste manuel : il réécrit ~110 000
+            lignes, trop pour être joué à chaque modification. */}
+        {etatProximites.donnees?.perimee && (
+          <div className="bandeau-alerte">
+            <span>
+              Les passerelles de cette fiche ont été calculées avant vos dernières
+              modifications : elles ne les prennent pas encore en compte.
+            </span>
+            <button
+              type="button"
+              className="bouton--secondaire"
+              onClick={lancerRecalcul}
+              disabled={recalculEnCours}
+            >
+              {recalculEnCours ? 'Recalcul en cours…' : 'Recalculer les passerelles'}
+            </button>
+          </div>
+        )}
       </header>
 
       {(modeEdition || m.definition) && (
@@ -289,21 +448,123 @@ export function MetierDetailPage() {
       )}
 
       <section className="fiche__section">
-        <h2>Activités et compétences du métier</h2>
+        <div className="fiche__entete-ligne">
+          <h2>Activités et compétences du métier</h2>
+          <div className="fiche__entete-boutons">
+            {modeEditionCouples && (
+              <button
+                type="button"
+                className="bouton--secondaire"
+                onClick={() => setAjoutOuvert((ouvert) => !ouvert)}
+                disabled={ajoutEnCours}
+              >
+                {ajoutOuvert ? 'Masquer l’ajout' : 'Ajouter un couple'}
+              </button>
+            )}
+            <button
+              type="button"
+              className={modeEditionCouples ? 'bouton--export' : 'bouton--secondaire'}
+              onClick={() => {
+                setModeEditionCouples((actif) => !actif);
+                setAjoutOuvert(false);
+                setErreurCouples(null);
+              }}
+            >
+              {modeEditionCouples ? 'Terminer' : 'Modifier'}
+            </button>
+          </div>
+        </div>
+
+        {erreurCouples && <ErrorMessage message={erreurCouples} />}
+
+        {modeEditionCouples && ajoutOuvert && (
+          <AjoutCouple
+            codeMetier={code}
+            onAjouter={(variante) => ajouterUnCouple(variante.coupleId)}
+            onAnnuler={() => setAjoutOuvert(false)}
+            ajoutEnCours={ajoutEnCours}
+          />
+        )}
+
         {activites.chargement && <Loader />}
         {activites.erreur && <ErrorMessage message={activites.erreur} />}
         {activites.donnees && activites.donnees.data.length === 0 && (
           <p className="vide">Aucun couple activité-compétence renseigné.</p>
         )}
-        <CouplesFiche couples={activites.donnees?.data ?? []} />
+        <CouplesFiche
+          couples={activites.donnees?.data ?? []}
+          onSupprimer={
+            modeEditionCouples
+              ? (c) => retirerUnCouple(c.id, c.intituleActivite ?? c.codeActivite)
+              : undefined
+          }
+          suppressionEnCours={suppressionEnCours}
+        />
       </section>
 
-      {(m.transversales ?? []).length > 0 && (
-        <section className="fiche__section">
+      <section className="fiche__section">
+        <div className="fiche__entete-ligne">
           <h2>Ressources transverses mobilisées dans le travail</h2>
-          <TransversalesFiche transversales={m.transversales!} />
-        </section>
-      )}
+          <div className="fiche__entete-boutons">
+            {modeEditionTransv ? (
+              <>
+                <button
+                  type="button"
+                  className="bouton--secondaire"
+                  onClick={() => setModeEditionTransv(false)}
+                  disabled={enregistrementTransv}
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  className="bouton--export"
+                  onClick={enregistrerTransversales}
+                  disabled={enregistrementTransv}
+                >
+                  {enregistrementTransv ? 'Enregistrement…' : 'Enregistrer'}
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                className="bouton--secondaire"
+                onClick={commencerEditionTransv}
+                disabled={!referentiels.donnees}
+              >
+                Modifier
+              </button>
+            )}
+          </div>
+        </div>
+
+        {erreurTransv && <ErrorMessage message={erreurTransv} />}
+        {modeEditionTransv && (
+          <p className="detail">
+            Trois ressources entrent dans le calcul des passerelles — « Résolution de
+            problèmes », « Adaptabilité / réactivité / proactivité » et « Prise d’initiative
+            et gestion des aléas ». Changer leur niveau demandera un recalcul ; les quatorze
+            autres n’ont aucun effet sur les passerelles.
+          </p>
+        )}
+
+        <TransversalesFiche
+          transversales={modeEditionTransv ? transversalesEditables() : (m.transversales ?? [])}
+          edition={
+            modeEditionTransv
+              ? {
+                  valeurs: valeursTransv,
+                  onChange: (codeTransversale, valeur) =>
+                    setValeursTransv((precedent) => ({
+                      ...precedent,
+                      [codeTransversale]: valeur,
+                    })),
+                  desactive: enregistrementTransv,
+                }
+              : undefined
+          }
+        />
+      </section>
 
       <section className="fiche__section">
         <h2>Domaines de connaissances structurant pour l’exercice du métier</h2>
@@ -315,7 +576,17 @@ export function MetierDetailPage() {
       </section>
 
       <section className="fiche__section">
-        <h2>Métiers proches</h2>
+        <div className="fiche__entete-ligne">
+          <h2>Métiers proches</h2>
+          {/* Reprend ce métier comme point de départ sur l'écran passerelles complet
+              (nuage de points, tableau détaillé, export Word). */}
+          <Link
+            to={`/passerelles?metier=${encodeURIComponent(code)}`}
+            className="bouton--detail"
+          >
+            Détail
+          </Link>
+        </div>
 
         <div className="passerelles-parametres passerelles-parametres--compact">
           <FiltresPasserelles

@@ -1,10 +1,14 @@
-import { apiGet, apiPatch } from './client';
+import { apiGet, apiPatch, apiPost, apiPut, apiDelete } from './client';
 import type {
   Metier,
   Couple,
   MetierProche,
   MetierOption,
+  MetierTransversale,
   ConnaissanceMetier,
+  ActiviteAjoutable,
+  VarianteCouple,
+  EtatProximites,
   PaginatedResponse,
 } from '@/types/api';
 
@@ -57,6 +61,85 @@ export function obtenirActivitesMetier(code: string, signal?: AbortSignal) {
 export function obtenirConnaissancesMetier(code: string, signal?: AbortSignal) {
   return apiGet<{ data: ConnaissanceMetier[] }>(
     `/metiers/${encodeURIComponent(code)}/connaissances`,
+    undefined,
+    signal,
+  );
+}
+
+// ---------- Édition des ressources transverses ----------
+
+export interface NiveauTransversale {
+  codeTransversale: string;
+  /** 1 à 4 — les quatre paliers du référentiel. `null` si « non concerné ». */
+  niveau: number | null;
+  nonConcerne: boolean;
+}
+
+/**
+ * Écrit les niveaux en bloc (PUT) : la section s'enregistre d'un seul geste. La réponse
+ * signale si le changement a périmé les passerelles — seuls TRANSV_2, 8 et 10 y entrent.
+ */
+export function modifierTransversales(
+  code: string,
+  transversales: NiveauTransversale[],
+  signal?: AbortSignal,
+) {
+  return apiPut<{ data: MetierTransversale[]; proximitePerimee: boolean }>(
+    `/metiers/${encodeURIComponent(code)}/transversales`,
+    { transversales },
+    signal,
+  );
+}
+
+// ---------- Édition des couples activité-compétence ----------
+
+/** Le catalogue des activités que cette fiche ne porte pas encore. */
+export function listerCouplesAjoutables(code: string, search: string, signal?: AbortSignal) {
+  return apiGet<{ data: ActiviteAjoutable[] }>(
+    `/metiers/${encodeURIComponent(code)}/couples-ajoutables`,
+    { search },
+    signal,
+  );
+}
+
+/**
+ * Les rédactions existantes d'un code activité, chacune avec ses formacodes. L'ajout en
+ * recopie une : les domaines de connaissance pendent du couple, pas du code activité, et
+ * diffèrent d'une fiche à l'autre pour la moitié des codes partagés.
+ */
+export function listerVariantesCouple(code: string, codeActivite: string, signal?: AbortSignal) {
+  return apiGet<{ data: VarianteCouple[] }>(
+    `/metiers/${encodeURIComponent(code)}/couples-ajoutables/${encodeURIComponent(codeActivite)}`,
+    undefined,
+    signal,
+  );
+}
+
+export function ajouterCouple(code: string, coupleSourceId: number, signal?: AbortSignal) {
+  return apiPost<Couple>(
+    `/metiers/${encodeURIComponent(code)}/couples`,
+    { coupleSourceId },
+    signal,
+  );
+}
+
+export function supprimerCouple(code: string, coupleId: number, signal?: AbortSignal) {
+  return apiDelete(`/metiers/${encodeURIComponent(code)}/couples/${coupleId}`, signal);
+}
+
+/** Les passerelles affichées sur cette fiche datent-elles d'avant sa dernière modification ? */
+export function obtenirEtatProximites(code: string, signal?: AbortSignal) {
+  return apiGet<EtatProximites>(
+    `/metiers/${encodeURIComponent(code)}/proximites/etat`,
+    undefined,
+    signal,
+  );
+}
+
+/** Rejoue le calcul complet (~110 000 lignes) — plusieurs secondes. */
+export function recalculerProximites(signal?: AbortSignal) {
+  return apiPost<{ lignes: number; calculeLe: string }>(
+    '/passerelles/recalculer',
     undefined,
     signal,
   );

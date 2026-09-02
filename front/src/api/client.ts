@@ -60,7 +60,7 @@ export async function apiGet<T>(
 }
 
 async function envoyer<T>(
-  methode: 'POST' | 'PATCH',
+  methode: 'POST' | 'PATCH' | 'PUT',
   chemin: string,
   corps?: unknown,
   signal?: AbortSignal,
@@ -92,4 +92,32 @@ export function apiPost<T>(chemin: string, corps?: unknown, signal?: AbortSignal
 
 export function apiPatch<T>(chemin: string, corps?: unknown, signal?: AbortSignal): Promise<T> {
   return envoyer<T>('PATCH', chemin, corps, signal);
+}
+
+/** Remplacement d'un ensemble complet — voir les niveaux transverses, écrits en bloc. */
+export function apiPut<T>(chemin: string, corps?: unknown, signal?: AbortSignal): Promise<T> {
+  return envoyer<T>('PUT', chemin, corps, signal);
+}
+
+/**
+ * Une suppression répond 204 sans corps : `envoyer()` ne convient pas, son `response.json()`
+ * final lèverait sur une réponse vide.
+ */
+export async function apiDelete(chemin: string, signal?: AbortSignal): Promise<void> {
+  const reponse = await fetch(construireUrl(chemin), {
+    method: 'DELETE',
+    headers: { Accept: 'application/json' },
+    credentials: 'include',
+    signal,
+  });
+
+  if (!reponse.ok) {
+    gererExpirationSession(reponse.status);
+    const corpsErreur = await reponse.json().catch(() => null);
+    throw new ApiError(
+      reponse.status,
+      corpsErreur?.error?.message ?? `Erreur ${reponse.status}`,
+      corpsErreur?.error?.code,
+    );
+  }
 }
