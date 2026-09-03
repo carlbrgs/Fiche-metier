@@ -281,10 +281,13 @@ h2 {
   font: inherit;
   font-weight: 600;
   cursor: pointer;
+  /* Aussi utilisé sur des <Link> (ex. « Corriger les incohérences ») : annule leur soulignement. */
+  text-decoration: none;
 }
 .bouton--secondaire:hover {
   border-color: var(--couleur-accent);
   color: var(--couleur-accent);
+  text-decoration: none;
 }
 .bouton--secondaire:disabled {
   opacity: 0.45;
@@ -327,6 +330,37 @@ h2 {
   border-radius: var(--rayon);
   padding: 1rem 1.25rem;
   margin-bottom: 1rem;
+}
+
+/* Rédaction retenue avant application — voir IncoherenceDetailPage. */
+.fiche__section--selectionnee {
+  border-color: var(--couleur-accent);
+  border-width: 2px;
+  padding: calc(1rem - 1px) calc(1.25rem - 1px);
+}
+
+.edition-couple {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+.edition-couple__details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.edition-couple__niveaux {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.4rem;
+}
+@media (max-width: 40rem) {
+  .edition-couple__details,
+  .edition-couple__niveaux {
+    grid-template-columns: 1fr;
+  }
 }
 
 .definitions dt {
@@ -410,6 +444,21 @@ h2 {
 .acces__liste dd {
   margin: 0.15rem 0 0;
   color: var(--couleur-accent);
+}
+.acces__reponse-edition {
+  color: var(--couleur-texte);
+}
+.acces__rncp {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.acces__rncp select {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: var(--couleur-surface);
+  font: inherit;
 }
 
 /* ---------- Domaines de connaissance ---------- */

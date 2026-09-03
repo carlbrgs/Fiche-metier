@@ -5,6 +5,8 @@ import type {
   MetierProche,
   MetierOption,
   MetierTransversale,
+  MetierCondition,
+  MetierAcces,
   ConnaissanceMetier,
   ActiviteAjoutable,
   VarianteCouple,
@@ -87,6 +89,36 @@ export function modifierTransversales(
   return apiPut<{ data: MetierTransversale[]; proximitePerimee: boolean }>(
     `/metiers/${encodeURIComponent(code)}/transversales`,
     { transversales },
+    signal,
+  );
+}
+
+// ---------- Édition des conditions d'exercice et d'accès ----------
+
+export interface LigneCondition {
+  codeCondition: string;
+  valeur: 'significatif' | 'non_significatif';
+}
+
+export function modifierConditions(code: string, conditions: LigneCondition[], signal?: AbortSignal) {
+  return apiPut<{ data: MetierCondition[] }>(
+    `/metiers/${encodeURIComponent(code)}/conditions`,
+    { conditions },
+    signal,
+  );
+}
+
+export interface LigneAcces {
+  codeAcces: string;
+  /** `null` retire la réponse — ces 7 questions sont facultatives. */
+  valeur: string | null;
+}
+
+/** ACCES_3/ACCES_4 (niveau RNCP attendu) sont les seuls codes qui périment les passerelles. */
+export function modifierAcces(code: string, acces: LigneAcces[], signal?: AbortSignal) {
+  return apiPut<{ data: MetierAcces[]; proximitePerimee: boolean }>(
+    `/metiers/${encodeURIComponent(code)}/acces`,
+    { acces },
     signal,
   );
 }

@@ -5,6 +5,8 @@ import { MetiersPage } from '@/pages/MetiersPage';
 import { MetierDetailPage } from '@/pages/MetierDetailPage';
 import { ActivitesPage } from '@/pages/ActivitesPage';
 import { ActiviteDetailPage } from '@/pages/ActiviteDetailPage';
+import { IncoherencesPage } from '@/pages/IncoherencesPage';
+import { IncoherenceDetailPage } from '@/pages/IncoherenceDetailPage';
 import { FormacodesPage } from '@/pages/FormacodesPage';
 import { FormacodeDetailPage } from '@/pages/FormacodeDetailPage';
 import { PasserellesPage } from '@/pages/PasserellesPage';
@@ -30,6 +32,8 @@ export function App() {
             <Route path="metiers" element={<MetiersPage />} />
             <Route path="metiers/:code" element={<MetierDetailPage />} />
             <Route path="activites" element={<ActivitesPage />} />
+            <Route path="activites/incoherences" element={<IncoherencesPage />} />
+            <Route path="activites/incoherences/:code" element={<IncoherenceDetailPage />} />
             <Route path="activites/:code" element={<ActiviteDetailPage />} />
             <Route path="formacodes" element={<FormacodesPage />} />
             <Route path="formacodes/:code" element={<FormacodeDetailPage />} />

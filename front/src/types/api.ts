@@ -229,6 +229,37 @@ export interface RomeReferentiel {
   libelle: string | null;
 }
 
+// ---------- Incohérences entre rédactions d'un même couple ----------
+
+/** Un code activité dont les rédactions divergent selon le métier (hors mots-clés). */
+export interface CodeIncoherent {
+  codeActivite: string;
+  intituleActivite: string;
+  nbVariantes: number;
+  nbMetiers: number;
+}
+
+/** Contenu modifiable avant application — domaines de connaissance exclus, voir le back. */
+export interface EditionModele {
+  intituleActivite: string | null;
+  intituleCompetence: string | null;
+  detailsActivite: string[];
+  detailsCompetence: string[];
+  niveauxMaitrise: Array<{ niveau: number; description: string }>;
+}
+
+/** Une rédaction distincte d'un code activité, et les métiers qui la portent. */
+export interface VarianteDetaillee {
+  coupleModeleId: number;
+  metiers: Array<{ codeMetier: string; intitule: string }>;
+  intituleActivite: string | null;
+  intituleCompetence: string | null;
+  detailsActivite: string[];
+  detailsCompetence: string[];
+  niveauxMaitrise: Array<{ niveau: number; description: string }>;
+  connaissances: Array<{ codeFormacode: string; intitule: string | null; niveau: number | null }>;
+}
+
 export interface Referentiels {
   famillesMetier: FamilleMetier[];
   famillesActivite: Array<{ codeFamilleActivite: string; domaine1: string | null }>;

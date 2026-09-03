@@ -16,6 +16,7 @@ import {
   obtenirEtatProximites,
 } from '../controllers/couple.controller';
 import { modifierTransversales } from '../controllers/transversale.controller';
+import { modifierConditions, modifierAcces } from '../controllers/condition.controller';
 
 export const metierRoutes = Router();
 
@@ -36,3 +37,7 @@ metierRoutes.get('/:code/proximites/etat', asyncHandler(obtenirEtatProximites));
 
 // Niveaux des ressources transverses — enregistrés en bloc, voir le contrôleur.
 metierRoutes.put('/:code/transversales', asyncHandler(modifierTransversales));
+
+// Conditions d'exercice et d'accès — chacune enregistrée en bloc, voir le contrôleur.
+metierRoutes.put('/:code/conditions', asyncHandler(modifierConditions));
+metierRoutes.put('/:code/acces', asyncHandler(modifierAcces));

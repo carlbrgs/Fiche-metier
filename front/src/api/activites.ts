@@ -1,5 +1,13 @@
-import { apiGet } from './client';
-import type { Activite, Formacode, Referentiels, PaginatedResponse } from '@/types/api';
+import { apiGet, apiPut } from './client';
+import type {
+  Activite,
+  Formacode,
+  Referentiels,
+  CodeIncoherent,
+  VarianteDetaillee,
+  EditionModele,
+  PaginatedResponse,
+} from '@/types/api';
 
 export interface FiltresActivites {
   search?: string;
@@ -35,4 +43,36 @@ export function obtenirFormacode(code: string, signal?: AbortSignal) {
 
 export function obtenirReferentiels(signal?: AbortSignal) {
   return apiGet<Referentiels>('/referentiels', undefined, signal);
+}
+
+// ---------- Incohérences entre rédactions d'un même couple ----------
+
+/** Les codes activité dont les rédactions divergent selon le métier (hors mots-clés). */
+export function listerIncoherences(signal?: AbortSignal) {
+  return apiGet<{ data: CodeIncoherent[] }>('/activites/incoherences', undefined, signal);
+}
+
+export function obtenirVariantes(codeActivite: string, signal?: AbortSignal) {
+  return apiGet<{ data: VarianteDetaillee[] }>(
+    `/activites/${encodeURIComponent(codeActivite)}/variantes`,
+    undefined,
+    signal,
+  );
+}
+
+/**
+ * Recopie la rédaction du couple `coupleModeleId` sur tous les autres du même code.
+ * `edition`, si fourni, réécrit d'abord le modèle avec le contenu modifié.
+ */
+export function harmoniserCouple(
+  codeActivite: string,
+  coupleModeleId: number,
+  edition?: EditionModele,
+  signal?: AbortSignal,
+) {
+  return apiPut<{ nbMetiersAffectes: number }>(
+    `/activites/${encodeURIComponent(codeActivite)}/harmoniser`,
+    { coupleModeleId, edition },
+    signal,
+  );
 }

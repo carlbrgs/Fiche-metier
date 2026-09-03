@@ -189,8 +189,10 @@ export async function comparerMetiers(
 // niveau de diplôme attendu (`metier_acces` ACCES_3/ACCES_4, ex. "Niv.4"), en moyennant la
 // borne basse et la borne haute quand les deux sont renseignées.
 
-const CODE_ACCES_NIVEAU_BASSE = 'ACCES_3';
-const CODE_ACCES_NIVEAU_HAUTE = 'ACCES_4';
+export const CODE_ACCES_NIVEAU_BASSE = 'ACCES_3';
+export const CODE_ACCES_NIVEAU_HAUTE = 'ACCES_4';
+/** Niveaux RNCP portés par ACCES_3/ACCES_4 — seules valeurs observées sur les 333 métiers. */
+export const NIVEAUX_RNCP = ['Niv.3', 'Niv.4', 'Niv.5', 'Niv.6', 'Niv.7', 'Niv.8'] as const;
 /** Les seules ressources transverses qui pèsent dans le degré d'élargissement. */
 export const CODES_TRANSVERSE_BONUS = ['TRANSV_2', 'TRANSV_8', 'TRANSV_10'] as const;
 

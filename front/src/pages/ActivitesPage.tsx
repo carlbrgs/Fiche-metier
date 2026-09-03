@@ -18,7 +18,12 @@ export function ActivitesPage() {
 
   return (
     <div className="page">
-      <h1>Activités &amp; compétences</h1>
+      <div className="fiche__entete-ligne">
+        <h1>Activités &amp; compétences</h1>
+        <Link to="/activites/incoherences" className="bouton--secondaire">
+          Corriger les incohérences
+        </Link>
+      </div>
 
       <div className="barre-filtres">
         <SearchBar

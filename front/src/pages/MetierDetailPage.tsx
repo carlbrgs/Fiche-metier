@@ -11,6 +11,8 @@ import {
   obtenirEtatProximites,
   recalculerProximites,
   modifierTransversales,
+  modifierConditions,
+  modifierAcces,
 } from '@/api/metiers';
 import { obtenirReferentiels } from '@/api/activites';
 import { ApiError } from '@/api/client';
@@ -30,7 +32,7 @@ import { AjoutCouple } from '@/components/AjoutCouple';
 import { ConnaissancesFiche } from '@/components/ConnaissancesFiche';
 import { FiltresPasserelles } from '@/components/FiltresPasserelles';
 import { libelleFamille } from '@/utils/format';
-import type { MetierTransversale } from '@/types/api';
+import type { MetierTransversale, MetierCondition } from '@/types/api';
 
 export function MetierDetailPage() {
   const { code = '' } = useParams();
@@ -58,6 +60,18 @@ export function MetierDetailPage() {
   const [valeursTransv, setValeursTransv] = useState<Record<string, string>>({});
   const [enregistrementTransv, setEnregistrementTransv] = useState(false);
   const [erreurTransv, setErreurTransv] = useState<string | null>(null);
+
+  // Édition de la section « Conditions d'exercice du métier », qui couvre deux collections
+  // (les 15 conditions et les 7 questions d'accès) enregistrées ensemble au clic sur
+  // Enregistrer, comme les ressources transverses ci-dessus.
+  const [modeEditionConditions, setModeEditionConditions] = useState(false);
+  const [valeursConditions, setValeursConditions] = useState<
+    Record<string, 'significatif' | 'non_significatif'>
+  >({});
+  const [valeursAcces, setValeursAcces] = useState<Record<string, string>>({});
+  const [enregistrementConditions, setEnregistrementConditions] = useState(false);
+  const [erreurConditions, setErreurConditions] = useState<string | null>(null);
+
   const [modeEdition, setModeEdition] = useState(false);
   const [enregistrementEnCours, setEnregistrementEnCours] = useState(false);
   const [erreurEnregistrement, setErreurEnregistrement] = useState<string | null>(null);
@@ -248,6 +262,60 @@ export function MetierDetailPage() {
     }
   }
 
+  /** Les 15 conditions du référentiel, complétées par défaut « non significatif » pour
+   *  celles que la fiche ne porte pas encore (même filet que `transversalesEditables`). */
+  function conditionsEditables(): MetierCondition[] {
+    const portees = new Map((m.conditions ?? []).map((c) => [c.codeCondition, c]));
+    return (referentiels.donnees?.conditions ?? []).map(
+      (c) =>
+        portees.get(c.codeCondition) ?? {
+          codeCondition: c.codeCondition,
+          valeur: 'non_significatif',
+          critere: c,
+        },
+    );
+  }
+
+  function commencerEditionConditions() {
+    const departConditions: Record<string, 'significatif' | 'non_significatif'> = {};
+    for (const c of conditionsEditables()) departConditions[c.codeCondition] = c.valeur;
+    setValeursConditions(departConditions);
+
+    const departAcces: Record<string, string> = {};
+    for (const critere of referentiels.donnees?.acces ?? []) {
+      const existant = (m.acces ?? []).find((a) => a.codeAcces === critere.codeAcces);
+      departAcces[critere.codeAcces] = existant?.valeur ?? '';
+    }
+    setValeursAcces(departAcces);
+
+    setErreurConditions(null);
+    setModeEditionConditions(true);
+  }
+
+  async function enregistrerConditions() {
+    setEnregistrementConditions(true);
+    setErreurConditions(null);
+    try {
+      const conditions = Object.entries(valeursConditions).map(([codeCondition, valeur]) => ({
+        codeCondition,
+        valeur,
+      }));
+      const acces = Object.entries(valeursAcces).map(([codeAcces, valeur]) => ({
+        codeAcces,
+        valeur: valeur.trim() || null,
+      }));
+      await Promise.all([modifierConditions(code, conditions), modifierAcces(code, acces)]);
+      setModeEditionConditions(false);
+      // Les conditions/accès arrivent avec la fiche : même rechargement que definition/transv,
+      // il met aussi à jour le bandeau de péremption si ACCES_3/ACCES_4 ont changé.
+      setRechargerMetier((v) => v + 1);
+    } catch (err) {
+      setErreurConditions(err instanceof ApiError ? err.message : 'Enregistrement impossible');
+    } finally {
+      setEnregistrementConditions(false);
+    }
+  }
+
   async function lancerRecalcul() {
     setRecalculEnCours(true);
     setErreurCouples(null);
@@ -430,17 +498,82 @@ export function MetierDetailPage() {
         </section>
       )}
 
-      {((m.conditions ?? []).length > 0 || (m.acces ?? []).length > 0) && (
+      {(modeEditionConditions || (m.conditions ?? []).length > 0 || (m.acces ?? []).length > 0) && (
         <section className="fiche__section">
-          <h2>Conditions d’exercice du métier</h2>
-          <ConditionsFiche conditions={m.conditions ?? []} />
+          <div className="fiche__entete-ligne">
+            <h2>Conditions d’exercice du métier</h2>
+            <div className="fiche__entete-boutons">
+              {modeEditionConditions ? (
+                <>
+                  <button
+                    type="button"
+                    className="bouton--secondaire"
+                    onClick={() => setModeEditionConditions(false)}
+                    disabled={enregistrementConditions}
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="button"
+                    className="bouton--export"
+                    onClick={enregistrerConditions}
+                    disabled={enregistrementConditions}
+                  >
+                    {enregistrementConditions ? 'Enregistrement…' : 'Enregistrer'}
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  className="bouton--secondaire"
+                  onClick={commencerEditionConditions}
+                  disabled={!referentiels.donnees}
+                >
+                  Modifier
+                </button>
+              )}
+            </div>
+          </div>
 
-          {(m.acces ?? []).length > 0 && (
+          {erreurConditions && <ErrorMessage message={erreurConditions} />}
+          {modeEditionConditions && (
+            <p className="detail">
+              Le niveau ou l’intervalle de niveaux RNCP attendu (première question des
+              conditions d’accès) entre dans le calcul des passerelles ; le reste de la
+              section n’a aucun effet dessus.
+            </p>
+          )}
+
+          <ConditionsFiche
+            conditions={modeEditionConditions ? conditionsEditables() : (m.conditions ?? [])}
+            edition={
+              modeEditionConditions
+                ? {
+                    valeurs: valeursConditions,
+                    onChange: (codeCondition, valeur) =>
+                      setValeursConditions((precedent) => ({ ...precedent, [codeCondition]: valeur })),
+                    desactive: enregistrementConditions,
+                  }
+                : undefined
+            }
+          />
+
+          {(modeEditionConditions || (m.acces ?? []).length > 0) && (
             <div className="acces">
               <h3 className="transversales__titre">Conditions d’accès au métier</h3>
               <AccesFiche
-                acces={m.acces!}
+                acces={m.acces ?? []}
                 criteres={referentiels.donnees?.acces ?? []}
+                edition={
+                  modeEditionConditions
+                    ? {
+                        valeurs: valeursAcces,
+                        onChange: (codeAcces, valeur) =>
+                          setValeursAcces((precedent) => ({ ...precedent, [codeAcces]: valeur })),
+                        desactive: enregistrementConditions,
+                      }
+                    : undefined
+                }
               />
             </div>
           )}

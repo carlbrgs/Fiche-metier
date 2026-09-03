@@ -1,5 +1,19 @@
 import type { MetierCondition } from '@/types/api';
 
+type ValeurCondition = 'significatif' | 'non_significatif';
+
+interface Edition {
+  valeurs: Record<string, ValeurCondition>;
+  onChange: (codeCondition: string, valeur: ValeurCondition) => void;
+  desactive: boolean;
+}
+
+interface Props {
+  conditions: MetierCondition[];
+  /** Fourni uniquement en mode édition : remplace les croix par des cases à cocher. */
+  edition?: Edition;
+}
+
 /**
  * Les 15 conditions d'exercice, avec une croix dans la colonne retenue — même
  * présentation que la fiche métier Excel.
@@ -11,7 +25,7 @@ import type { MetierCondition } from '@/types/api';
  * Le balisage `scope="row"` / `scope="col"` suffit à rendre la croix intelligible à la
  * voix : la cellule est annoncée avec l'intitulé de sa ligne et de sa colonne.
  */
-export function ConditionsFiche({ conditions }: { conditions: MetierCondition[] }) {
+export function ConditionsFiche({ conditions, edition }: Props) {
   if (conditions.length === 0) return null;
 
   const triees = [...conditions].sort(
@@ -32,19 +46,45 @@ export function ConditionsFiche({ conditions }: { conditions: MetierCondition[] 
         </tr>
       </thead>
       <tbody>
-        {triees.map((c) => (
-          <tr key={c.codeCondition}>
-            <th scope="row" className="conditions__libelle">
-              {c.critere?.libelle ?? c.codeCondition}
-            </th>
-            <td className="colonne-croix">
-              {c.valeur === 'non_significatif' && <span className="croix">X</span>}
-            </td>
-            <td className="colonne-croix">
-              {c.valeur === 'significatif' && <span className="croix">X</span>}
-            </td>
-          </tr>
-        ))}
+        {triees.map((c) => {
+          const libelle = c.critere?.libelle ?? c.codeCondition;
+          const valeur = edition ? (edition.valeurs[c.codeCondition] ?? c.valeur) : c.valeur;
+          return (
+            <tr key={c.codeCondition}>
+              <th scope="row" className="conditions__libelle">
+                {libelle}
+              </th>
+              <td className="colonne-croix">
+                {edition ? (
+                  <input
+                    type="radio"
+                    name={`condition-${c.codeCondition}`}
+                    aria-label={`${libelle} — non significatif`}
+                    checked={valeur === 'non_significatif'}
+                    disabled={edition.desactive}
+                    onChange={() => edition.onChange(c.codeCondition, 'non_significatif')}
+                  />
+                ) : (
+                  valeur === 'non_significatif' && <span className="croix">X</span>
+                )}
+              </td>
+              <td className="colonne-croix">
+                {edition ? (
+                  <input
+                    type="radio"
+                    name={`condition-${c.codeCondition}`}
+                    aria-label={`${libelle} — significatif`}
+                    checked={valeur === 'significatif'}
+                    disabled={edition.desactive}
+                    onChange={() => edition.onChange(c.codeCondition, 'significatif')}
+                  />
+                ) : (
+                  valeur === 'significatif' && <span className="croix">X</span>
+                )}
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
