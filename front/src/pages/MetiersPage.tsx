@@ -13,13 +13,18 @@ import { libelleFamille } from '@/utils/format';
 export function MetiersPage() {
   const [recherche, setRecherche] = useState('');
   const [famille, setFamille] = useState('');
+  const [dossier, setDossier] = useState('');
   const [rome, setRome] = useState('');
   const [page, setPage] = useState(1);
 
   const referentiels = useFetch((signal) => obtenirReferentiels(signal), []);
   const metiers = useFetch(
-    (signal) => listerMetiers({ search: recherche, famille, rome, page, limit: 24 }, signal),
-    [recherche, famille, rome, page],
+    (signal) =>
+      listerMetiers(
+        { search: recherche, famille, dossier: dossier ? Number(dossier) : undefined, rome, page, limit: 24 },
+        signal,
+      ),
+    [recherche, famille, dossier, rome, page],
   );
 
   // Un changement de filtre doit ramener à la page 1, sinon on affiche une page
@@ -56,6 +61,15 @@ export function MetiersPage() {
             valeur: r.codeRome,
             // La source ne documente le libellé que pour 27 des 136 codes.
             libelle: r.libelle ? `${r.codeRome} — ${r.libelle}` : r.codeRome,
+          }))}
+        />
+        <FiltreSelect
+          label="Dossier"
+          valeur={dossier}
+          onChange={changerFiltre(setDossier)}
+          options={(referentiels.donnees?.dossiersSource ?? []).map((d) => ({
+            valeur: String(d.id),
+            libelle: d.libelle,
           }))}
         />
       </div>

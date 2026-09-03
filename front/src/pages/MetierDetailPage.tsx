@@ -37,6 +37,7 @@ import type { MetierTransversale, MetierCondition } from '@/types/api';
 export function MetierDetailPage() {
   const { code = '' } = useParams();
   const [exportEnCours, setExportEnCours] = useState(false);
+  const [modeleExport, setModeleExport] = useState<'standard' | 'ocapiat'>('standard');
   const [dcMin, setDcMin] = useState(1);
   const [heuresMax, setHeuresMax] = useState(2000);
   const [degreMin, setDegreMin] = useState(0.1);
@@ -134,14 +135,25 @@ export function MetierDetailPage() {
       // Import dynamique : `docx` (~600 ko) ne doit peser que sur les visiteurs qui exportent.
       // Seule la sélection déjà filtrée (`resultatsProches`) part dans le document : les
       // contrôles de filtre eux-mêmes n'existent que dans la page, jamais dans l'export.
-      const { exporterFicheMetierWord } = await import('@/utils/exportWord');
-      await exporterFicheMetierWord({
-        metier: metier.donnees,
-        couples: activites.donnees?.data ?? [],
-        connaissances: connaissances.donnees?.data ?? [],
-        proches: resultatsProches,
-        criteresAcces: referentiels.donnees?.acces ?? [],
-      });
+      if (modeleExport === 'ocapiat') {
+        const { exporterFicheMetierOcapiat } = await import('@/utils/exportWord');
+        await exporterFicheMetierOcapiat({
+          metier: metier.donnees,
+          couples: activites.donnees?.data ?? [],
+          connaissances: connaissances.donnees?.data ?? [],
+          proches: resultatsProches,
+          referentielRome: referentiels.donnees?.rome ?? [],
+        });
+      } else {
+        const { exporterFicheMetierWord } = await import('@/utils/exportWord');
+        await exporterFicheMetierWord({
+          metier: metier.donnees,
+          couples: activites.donnees?.data ?? [],
+          connaissances: connaissances.donnees?.data ?? [],
+          proches: resultatsProches,
+          criteresAcces: referentiels.donnees?.acces ?? [],
+        });
+      }
     } finally {
       setExportEnCours(false);
     }
@@ -362,6 +374,17 @@ export function MetierDetailPage() {
                 <button type="button" className="bouton--secondaire" onClick={commencerEdition}>
                   Modifier
                 </button>
+                <select
+                  className="select-modele-export"
+                  value={modeleExport}
+                  onChange={(e) => setModeleExport(e.target.value as 'standard' | 'ocapiat')}
+                  disabled={exportEnCours}
+                  aria-label="Modèle d’export Word"
+                  title="Modèle OCAPIAT — voir docs/EXEMPLE FICHE METIER.docx"
+                >
+                  <option value="standard">Modèle standard</option>
+                  <option value="ocapiat">Modèle OCAPIAT</option>
+                </select>
                 <button
                   type="button"
                   className="bouton--export"

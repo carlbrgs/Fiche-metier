@@ -29,6 +29,7 @@ export function PasserellesPage() {
   const [heuresMax, setHeuresMax] = useState(2000);
   const [degreMin, setDegreMin] = useState(0.1);
   const [memeFamille, setMemeFamille] = useState(false);
+  const [afficherNoms, setAfficherNoms] = useState(false);
   const [exportEnCours, setExportEnCours] = useState(false);
 
   const options = useFetch((signal) => listerMetiersOptions(signal), []);
@@ -119,8 +120,18 @@ export function PasserellesPage() {
       {codeSource && proches.donnees && (
         <>
           <section className="fiche__section">
-            <h2>Durée d’acquisition en heures selon le degré d’élargissement</h2>
-            <PasserellesScatter candidats={resultats} />
+            <div className="passerelles-graphique-entete">
+              <h2>Durée d’acquisition en heures selon le degré d’élargissement</h2>
+              <label className="passerelles-graphique-entete__case">
+                <input
+                  type="checkbox"
+                  checked={afficherNoms}
+                  onChange={(e) => setAfficherNoms(e.target.checked)}
+                />
+                Afficher les noms des métiers
+              </label>
+            </div>
+            <PasserellesScatter candidats={resultats} afficherNoms={afficherNoms} />
           </section>
 
           <section className="fiche__section">

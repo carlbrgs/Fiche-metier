@@ -85,6 +85,9 @@ export interface Metier {
   interfaceAmontAval: string | null;
   nbCouple: number | null;
   remarque: string | null;
+  /** Renseigné pour la fiche source, absent pour les 34 métiers hors outil de collecte. */
+  redacteur: string | null;
+  dossierAutre: string | null;
   famille?: FamilleMetier | null;
   dossierSource?: DossierSource | null;
   appellations?: Appellation[];
@@ -149,6 +152,7 @@ export interface Couple {
   detailsCompetence?: Detail[];
   niveauxMaitrise?: Array<{ id: number; niveau: number; description: string }>;
   motsCles?: Array<{ id: number; libelle: string }>;
+  connaissances?: ActiviteConnaissance[];
   /** Présent quand le couple est vu depuis l'activité et non depuis le métier. */
   metier?: { codeMetier: string; intitule: string; codeFamille: string | null };
 }

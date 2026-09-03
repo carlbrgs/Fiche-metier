@@ -1,10 +1,13 @@
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { MetierProche } from '@/types/api';
 
 const LARGEUR = 640;
 const HAUTEUR = 360;
 const MARGE = { haut: 20, droite: 24, bas: 44, gauche: 60 };
+const PAS_CLAVIER = 4;
+const ETIQUETTE_CAR_PAR_LIGNE = 20;
+const ETIQUETTE_HAUTEUR_LIGNE = 10;
 
 interface Point {
   codeMetier: string;
@@ -12,6 +15,20 @@ interface Point {
   heures: number;
   degre: number;
   nbDcCommuns: number | null;
+}
+
+interface Decalage {
+  dx: number;
+  dy: number;
+}
+
+interface DragEnCours {
+  codeMetier: string;
+  pointerId: number;
+  clientXDepart: number;
+  clientYDepart: number;
+  dxDepart: number;
+  dyDepart: number;
 }
 
 function arrondirAuDessus(valeur: number, pas: number): number {
@@ -22,15 +39,89 @@ function genererTicks(max: number, nombre = 5): number[] {
   return Array.from({ length: nombre + 1 }, (_, i) => (max / nombre) * i);
 }
 
+/** Découpe un intitulé en lignes ≤ `maxCar`, aux espaces — jamais de troncature du nom. */
+function decouperEnLignes(texte: string, maxCar: number): string[] {
+  const mots = texte.split(' ');
+  const lignes: string[] = [];
+  let ligne = '';
+  for (const mot of mots) {
+    const essai = ligne ? `${ligne} ${mot}` : mot;
+    if (essai.length > maxCar && ligne) {
+      lignes.push(ligne);
+      ligne = mot;
+    } else {
+      ligne = essai;
+    }
+  }
+  if (ligne) lignes.push(ligne);
+  return lignes;
+}
+
 /**
  * Nuage de points durée d'acquisition × degré d'élargissement — même paire d'axes que le
  * graphique de la feuille « Métiers passerelles » du classeur source. Une seule série : pas
  * de légende, le titre de la section suffit à l'identifier.
  */
-export function PasserellesScatter({ candidats }: { candidats: MetierProche[] }) {
+export function PasserellesScatter({
+  candidats,
+  afficherNoms = false,
+}: {
+  candidats: MetierProche[];
+  afficherNoms?: boolean;
+}) {
   const navigate = useNavigate();
   const idBase = useId();
   const [survole, setSurvole] = useState<number | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const dragRef = useRef<DragEnCours | null>(null);
+  const [decalages, setDecalages] = useState<Record<string, Decalage>>({});
+
+  function demarrerGlissement(e: React.PointerEvent<SVGTextElement>, codeMetier: string) {
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const actuel = decalages[codeMetier] ?? { dx: 0, dy: 0 };
+    dragRef.current = {
+      codeMetier,
+      pointerId: e.pointerId,
+      clientXDepart: e.clientX,
+      clientYDepart: e.clientY,
+      dxDepart: actuel.dx,
+      dyDepart: actuel.dy,
+    };
+  }
+
+  function poursuivreGlissement(e: React.PointerEvent<SVGTextElement>) {
+    const drag = dragRef.current;
+    const svg = svgRef.current;
+    if (!drag || !svg || drag.pointerId !== e.pointerId) return;
+    const rect = svg.getBoundingClientRect();
+    if (rect.width === 0) return;
+    const echelle = LARGEUR / rect.width;
+    const dx = drag.dxDepart + (e.clientX - drag.clientXDepart) * echelle;
+    const dy = drag.dyDepart + (e.clientY - drag.clientYDepart) * echelle;
+    setDecalages((d) => ({ ...d, [drag.codeMetier]: { dx, dy } }));
+  }
+
+  function terminerGlissement(e: React.PointerEvent<SVGTextElement>) {
+    if (dragRef.current?.pointerId === e.pointerId) dragRef.current = null;
+  }
+
+  function deplacerAuClavier(e: React.KeyboardEvent<SVGTextElement>, codeMetier: string) {
+    const deplacements: Record<string, [number, number]> = {
+      ArrowUp: [0, -PAS_CLAVIER],
+      ArrowDown: [0, PAS_CLAVIER],
+      ArrowLeft: [-PAS_CLAVIER, 0],
+      ArrowRight: [PAS_CLAVIER, 0],
+    };
+    const deplacement = deplacements[e.key];
+    if (!deplacement) return;
+    e.preventDefault();
+    const actuel = decalages[codeMetier] ?? { dx: 0, dy: 0 };
+    setDecalages((d) => ({
+      ...d,
+      [codeMetier]: { dx: actuel.dx + deplacement[0], dy: actuel.dy + deplacement[1] },
+    }));
+  }
 
   const points: Point[] = candidats
     .filter((c) => c.dureeAcquisitionHeures !== null && c.degreElargissement !== null)
@@ -59,9 +150,26 @@ export function PasserellesScatter({ candidats }: { candidats: MetierProche[] })
 
   const point = survole !== null ? points[survole] : null;
 
+  const nbDecalages = Object.keys(decalages).length;
+
   return (
     <div className="passerelles-graphique">
-      <svg viewBox={`0 0 ${LARGEUR} ${HAUTEUR}`} role="img" aria-label="Durée d’acquisition en heures en fonction du degré d’élargissement, un point par métier candidat">
+      {afficherNoms && (
+        <p className="passerelles-graphique__aide">
+          Glissez un nom pour le repositionner (double-clic pour le réinitialiser).
+          {nbDecalages > 0 && (
+            <button type="button" className="lien-bouton" onClick={() => setDecalages({})}>
+              Réinitialiser les étiquettes
+            </button>
+          )}
+        </p>
+      )}
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${LARGEUR} ${HAUTEUR}`}
+        role="img"
+        aria-label="Durée d’acquisition en heures en fonction du degré d’élargissement, un point par métier candidat"
+      >
         {/* Grille — hairline, en retrait, jamais devant les points. */}
         {ticksY.map((t) => (
           <line
@@ -142,6 +250,76 @@ export function PasserellesScatter({ candidats }: { candidats: MetierProche[] })
             />
           </g>
         ))}
+
+        {/* Noms des métiers — optionnels, alternés au-dessus/en dessous du point pour limiter
+            les recouvrements entre voisins, sauf près des bords où la position est forcée.
+            Chacun est déplaçable à la souris/tactile (ou aux flèches, une fois focus) pour
+            que l'utilisateur puisse lui-même désenchevêtrer les étiquettes trop proches. */}
+        {afficherNoms &&
+          points.map((p, i) => {
+            const cx = px(p.heures);
+            const cy = py(p.degre);
+            const lignes = decouperEnLignes(p.intitule, ETIQUETTE_CAR_PAR_LIGNE);
+            const hauteurBloc = lignes.length * ETIQUETTE_HAUTEUR_LIGNE;
+            let enDessous = i % 2 === 1;
+            if (cy - 9 - hauteurBloc < MARGE.haut) enDessous = true;
+            else if (cy + 20 + hauteurBloc > HAUTEUR - MARGE.bas) enDessous = false;
+            // Ligne la plus proche du point : la première si en dessous, la dernière si au-dessus.
+            const ancreY = enDessous ? cy + 20 : cy - 9;
+            const decalage = decalages[p.codeMetier];
+            const dx = decalage?.dx ?? 0;
+            const dy = decalage?.dy ?? 0;
+            const x = cx + dx;
+            const deplacee = decalage !== undefined && (Math.abs(dx) > 2 || Math.abs(dy) > 2);
+            return (
+              <g key={`etiquette-${p.codeMetier}`}>
+                {deplacee && (
+                  <line
+                    x1={cx}
+                    y1={cy}
+                    x2={x}
+                    y2={ancreY + dy - (enDessous ? 8 : -4)}
+                    className="passerelles-graphique__lien-etiquette"
+                  />
+                )}
+                <text
+                  x={x}
+                  y={ancreY + dy}
+                  className="passerelles-graphique__etiquette"
+                  textAnchor="middle"
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Étiquette « ${p.intitule} » — déplaçable, flèches du clavier pour ajuster`}
+                  onPointerDown={(e) => demarrerGlissement(e, p.codeMetier)}
+                  onPointerMove={poursuivreGlissement}
+                  onPointerUp={terminerGlissement}
+                  onPointerCancel={terminerGlissement}
+                  onKeyDown={(e) => deplacerAuClavier(e, p.codeMetier)}
+                  onDoubleClick={() =>
+                    setDecalages((d) => {
+                      if (!(p.codeMetier in d)) return d;
+                      const suite = { ...d };
+                      delete suite[p.codeMetier];
+                      return suite;
+                    })
+                  }
+                >
+                  {lignes.map((ligne, j) => {
+                    // En dessous : la ligne j s'éloigne du point vers le bas (j=0 au plus près).
+                    // Au-dessus : c'est la dernière ligne qui est au plus près du point.
+                    const decalageLigne = enDessous
+                      ? j * ETIQUETTE_HAUTEUR_LIGNE
+                      : -(lignes.length - 1 - j) * ETIQUETTE_HAUTEUR_LIGNE;
+                    return (
+                      <tspan key={j} x={x} dy={j === 0 ? decalageLigne : ETIQUETTE_HAUTEUR_LIGNE}>
+                        {ligne}
+                      </tspan>
+                    );
+                  })}
+                </text>
+              </g>
+            );
+          })}
 
         {/* Infobulle : ancrée au point survolé/focus, resserrée contre les bords du graphique. */}
         {point && (() => {
