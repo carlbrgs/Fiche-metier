@@ -386,6 +386,85 @@ h2 {
 
 /* ---------- Tableaux ---------- */
 
+.tableau-scroll {
+  overflow-x: auto;
+}
+
+.tableau input,
+.tableau select,
+.tableau textarea {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: var(--couleur-surface);
+  font: inherit;
+  font-size: 0.85rem;
+}
+.tableau .champ-etroit {
+  width: 5.5rem;
+}
+.tableau .champ-origine {
+  min-width: 12rem;
+}
+
+/* Retrait d'une ligne, posé sur une cellule de tableau claire (contrairement à
+   `.bouton--retirer`, pensé pour un en-tête coloré). */
+.bouton--retirer-ligne {
+  flex: none;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--couleur-erreur);
+  background: transparent;
+  color: var(--couleur-erreur);
+  border-radius: var(--rayon);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.bouton--retirer-ligne:hover:not(:disabled) {
+  background: var(--couleur-erreur);
+  color: #fff;
+}
+.bouton--retirer-ligne:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.bouton--ajouter {
+  margin-top: 0.75rem;
+}
+
+/* Panneau bas de page : la méthode de calcul et sa référence, choisies par niveau via un
+   menu déroulant plutôt que dans la table — les deux prennent toute la largeur disponible. */
+.formacode-methode-edition {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--couleur-bordure);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.formacode-methode-edition__champ {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.formacode-methode-edition__champ label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--couleur-texte-doux);
+}
+.formacode-methode-edition__champ textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: var(--couleur-surface);
+  font: inherit;
+  resize: vertical;
+}
+
 .tableau {
   width: 100%;
   border-collapse: collapse;
@@ -1008,6 +1087,13 @@ h2 {
   font-size: 0.8rem;
   cursor: pointer;
   text-decoration: underline;
+}
+.lien-bouton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.lien-bouton--actif {
+  font-weight: 600;
 }
 
 .passerelles-graphique-entete {

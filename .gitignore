@@ -11,6 +11,8 @@ Thumbs.db
 coverage/
 .vscode/
 .idea/
+FORMACODE BASE*
+Bases Formacodes/
 
 # Fichiers sources Excel (volumineux, versionnés hors git si besoin)
 # *.xlsx

@@ -104,6 +104,16 @@ export interface Formacode {
   estFondamental: boolean;
   nsf?: { codeNsf: string; libelle: string | null } | null;
   niveaux?: FormacodeNiveau[];
+  /** Uniquement sur GET /formacodes/:code — les métiers qui portent ce formacode. */
+  metiers?: FormacodeMetier[];
+}
+
+export interface FormacodeMetier {
+  codeMetier: string;
+  intitule: string;
+  codeFamille: string | null;
+  niveauMax: number | null;
+  nbCouples: number;
 }
 
 export interface FormacodeNiveau {
@@ -115,7 +125,7 @@ export interface FormacodeNiveau {
   dureeMois: string | null;
   methodeCalcul: string | null;
   source: string | null;
-  origine: 'base_formacodes' | 'base_competences';
+  origine: 'base_formacodes' | 'base_competences' | 'outil_fiche_metier';
 }
 
 export interface ActiviteConnaissance {
@@ -273,4 +283,71 @@ export interface Referentiels {
   dossiersSource: DossierSource[];
   nsf: Array<{ codeNsf: string; libelle: string | null }>;
   rome: RomeReferentiel[];
+}
+
+// ---------- Export général (GET /export/general) ----------
+// Formes propres à cet export, pas les types de fiche ci-dessus : les includes Sequelize
+// y produisent une structure différente (colonnes à plat, une seule relation par ligne).
+
+export interface ExportGeneralMetier {
+  codeMetier: string;
+  intitule: string;
+  definition: string | null;
+  codeFamille: string | null;
+  famille?: { intitule: string } | null;
+  dossierSource?: { libelle: string } | null;
+  dossierAutre: string | null;
+  responsTransverse: string | null;
+  interfaceAmontAval: string | null;
+  redacteur: string | null;
+  nbCouple: number | null;
+}
+
+export interface ExportGeneralCouple {
+  codeMetier: string;
+  codeActivite: string;
+  ordre: number;
+  intituleActivite: string | null;
+  intituleCompetence: string | null;
+}
+
+export interface ExportGeneralConnaissance {
+  codeFormacode: string;
+  intitule: string | null;
+  niveau: number | null;
+  dureeHeures: string | null;
+  codeNsf: string | null;
+  estFondamental: boolean;
+  couple?: { codeMetier: string; codeActivite: string; ordre: number } | null;
+}
+
+export interface ExportGeneralTransversale {
+  codeMetier: string;
+  codeTransversale: string;
+  niveau: number | null;
+  nonConcerne: boolean;
+  competence?: { libelle: string; groupe: string | null } | null;
+}
+
+export interface ExportGeneralCondition {
+  codeMetier: string;
+  codeCondition: string;
+  valeur: string;
+  critere?: { libelle: string } | null;
+}
+
+export interface ExportGeneralAcces {
+  codeMetier: string;
+  codeAcces: string;
+  valeur: string;
+  critere?: { libelle: string } | null;
+}
+
+export interface ExportGeneral {
+  metiers: ExportGeneralMetier[];
+  couples: ExportGeneralCouple[];
+  connaissances: ExportGeneralConnaissance[];
+  transversales: ExportGeneralTransversale[];
+  conditions: ExportGeneralCondition[];
+  acces: ExportGeneralAcces[];
 }

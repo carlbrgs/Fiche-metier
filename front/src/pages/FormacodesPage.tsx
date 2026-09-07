@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listerFormacodes, obtenirReferentiels } from '@/api/activites';
+import { exporterFormacodesCsv } from '@/utils/exportCsv';
 import { useFetch } from '@/hooks/useFetch';
 import { SearchBar } from '@/components/SearchBar';
 import { FiltreSelect } from '@/components/FiltreSelect';
@@ -12,6 +13,7 @@ export function FormacodesPage() {
   const [recherche, setRecherche] = useState('');
   const [nsf, setNsf] = useState('');
   const [page, setPage] = useState(1);
+  const [exportEnCours, setExportEnCours] = useState(false);
 
   const referentiels = useFetch((signal) => obtenirReferentiels(signal), []);
   const formacodes = useFetch(
@@ -24,9 +26,23 @@ export function FormacodesPage() {
     setPage(1);
   };
 
+  async function exporter() {
+    setExportEnCours(true);
+    try {
+      await exporterFormacodesCsv({ search: recherche, nsf });
+    } finally {
+      setExportEnCours(false);
+    }
+  }
+
   return (
     <div className="page">
-      <h1>Domaines de connaissance</h1>
+      <div className="fiche__entete-ligne">
+        <h1>Domaines de connaissance</h1>
+        <button type="button" className="bouton--export" onClick={exporter} disabled={exportEnCours}>
+          {exportEnCours ? 'Export en cours…' : 'Exporter en Excel'}
+        </button>
+      </div>
 
       <div className="barre-filtres">
         <SearchBar

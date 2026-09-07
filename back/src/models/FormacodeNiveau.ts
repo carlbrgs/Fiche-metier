@@ -1,11 +1,13 @@
 import { DataTypes, Model, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { sequelize } from '../database/connection';
 
-export type OrigineFormacode = 'base_formacodes' | 'base_competences';
+export type OrigineFormacode = 'base_formacodes' | 'base_competences' | 'outil_fiche_metier';
 
 /**
  * Durée d'acquisition d'un formacode à un niveau d'approfondissement donné.
- * `origine` distingue les deux classeurs sources, qui peuvent diverger sur la durée.
+ * `origine` distingue les deux classeurs importés en bloc et les saisies faites
+ * directement dans l'outil (`outil_fiche_metier`, prioritaire sur les deux — voir
+ * chargerDureesParFormacodeNiveau dans passerelle.service.ts).
  */
 export class FormacodeNiveau extends Model<
   InferAttributes<FormacodeNiveau>,
@@ -35,7 +37,7 @@ FormacodeNiveau.init(
     methodeCalcul: { type: DataTypes.TEXT, allowNull: true },
     source: { type: DataTypes.TEXT, allowNull: true },
     origine: {
-      type: DataTypes.ENUM('base_formacodes', 'base_competences'),
+      type: DataTypes.ENUM('base_formacodes', 'base_competences', 'outil_fiche_metier'),
       allowNull: false,
     },
   },

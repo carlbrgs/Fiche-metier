@@ -199,7 +199,7 @@ export async function importerCouples(): Promise<void> {
         rejets.push({
           ligne: numeroLigne,
           code: codeMetier,
-          motif: `Couples ignorés — code déjà traité ligne ${premiere}`,
+          motif: `Couples ignorés: code déjà traité ligne ${premiere}`,
         });
         continue;
       }

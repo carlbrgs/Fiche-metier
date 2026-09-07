@@ -356,6 +356,19 @@ async function chargerDonneesMetiers(): Promise<Map<string, DonneesMetier>> {
   return donnees;
 }
 
+/**
+ * Priorité décroissante entre les trois origines possibles d'une durée, en cas de doublon
+ * sur un même (formacode, niveau) : une saisie manuelle dans l'outil (`outil_fiche_metier`)
+ * prime sur les deux imports en bloc, et `base_formacodes` prime sur `base_competences`
+ * (même critère que l'import, voir formacodes.importer.ts) ; sans ça un XLOOKUP côté
+ * classeur n'aurait de toute façon retenu qu'une seule valeur.
+ */
+const PRIORITE_ORIGINE: Record<string, number> = {
+  outil_fiche_metier: 3,
+  base_formacodes: 2,
+  base_competences: 1,
+};
+
 /** `code_formacode|niveau` -> durée en heures. Une seule origine retenue en cas de doublon. */
 async function chargerDureesParFormacodeNiveau(): Promise<Map<string, number>> {
   const rows = await sequelize.query<{
@@ -370,12 +383,12 @@ async function chargerDureesParFormacodeNiveau(): Promise<Map<string, number>> {
   );
 
   const duree = new Map<string, number>();
+  const priorite = new Map<string, number>();
   for (const r of rows) {
     const cle = `${r.codeFormacode}|${r.niveau}`;
-    // `base_formacodes` prime sur `base_competences` en cas de doublon (même critère que
-    // l'import, voir formacodes.importer.ts) ; sans ça un XLOOKUP côté classeur n'aurait de
-    // toute façon retenu qu'une seule valeur.
-    if (duree.has(cle) && r.origine !== 'base_formacodes') continue;
+    const rang = PRIORITE_ORIGINE[r.origine] ?? 0;
+    if ((priorite.get(cle) ?? -1) >= rang) continue;
+    priorite.set(cle, rang);
     duree.set(cle, Number(r.dureeHeures ?? 0));
   }
   return duree;

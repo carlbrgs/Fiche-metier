@@ -17,7 +17,7 @@ export function IncoherencesPage() {
       <h1>Incohérences entre rédactions</h1>
       <p className="fiche__famille">
         Un même code activité devrait porter le même contenu sur tous les métiers qui
-        l’emploient. Voici les codes où ce n’est pas le cas — cliquer sur un code pour
+        l’emploient. Voici les codes où ce n’est pas le cas: cliquer sur un code pour
         comparer les rédactions et en appliquer une à tous les métiers concernés.
       </p>
 

@@ -2,6 +2,7 @@ import { apiGet, apiPut } from './client';
 import type {
   Activite,
   Formacode,
+  FormacodeNiveau,
   Referentiels,
   CodeIncoherent,
   VarianteDetaillee,
@@ -39,6 +40,32 @@ export function listerFormacodes(filtres: FiltresFormacodes, signal?: AbortSigna
 
 export function obtenirFormacode(code: string, signal?: AbortSignal) {
   return apiGet<Formacode>(`/formacodes/${encodeURIComponent(code)}`, undefined, signal);
+}
+
+// ---------- Édition des niveaux d'un formacode ----------
+
+export interface LigneNiveauFormacode {
+  niveau: number;
+  origine: 'base_formacodes' | 'base_competences' | 'outil_fiche_metier';
+  estNiveauUnique: boolean;
+  dureeHeures: number | null;
+  dureeSemaines: number | null;
+  dureeMois: number | null;
+  methodeCalcul: string | null;
+  source: string | null;
+}
+
+/** Remplace en bloc les lignes (niveau, origine) d'un formacode — ajout, retrait et édition. */
+export function modifierFormacodeNiveaux(
+  code: string,
+  niveaux: LigneNiveauFormacode[],
+  signal?: AbortSignal,
+) {
+  return apiPut<{ data: FormacodeNiveau[]; proximitePerimee: boolean }>(
+    `/formacodes/${encodeURIComponent(code)}/niveaux`,
+    { niveaux },
+    signal,
+  );
 }
 
 export function obtenirReferentiels(signal?: AbortSignal) {

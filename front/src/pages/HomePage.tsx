@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { exporterBaseGenerale } from '@/utils/exportCsv';
 
 const SECTIONS = [
   {
@@ -22,9 +24,31 @@ const SECTIONS = [
 ];
 
 export function HomePage() {
+  const [exportEnCours, setExportEnCours] = useState(false);
+
+  async function exporter() {
+    setExportEnCours(true);
+    try {
+      await exporterBaseGenerale();
+    } finally {
+      setExportEnCours(false);
+    }
+  }
+
   return (
     <div className="accueil">
-      <h1>Base de données Fiches Métiers</h1>
+      <div className="fiche__entete-ligne">
+        <h1>Base de données Fiches Métiers</h1>
+        <button
+          type="button"
+          className="bouton--export"
+          onClick={exporter}
+          disabled={exportEnCours}
+          title="Métiers, couples activité-compétence, domaines de connaissance, ressources transverses, conditions d’exercice et d’accès — six fichiers .csv dans une archive."
+        >
+          {exportEnCours ? 'Export en cours…' : 'Exporter toute la base'}
+        </button>
+      </div>
       <p className="accueil__intro">
         Consultation des cartographies métiers de branche : 333 métiers, 1 360 activités et
         158 domaines de connaissance.
